@@ -14,7 +14,6 @@ function App() {
   }
   return (
     <div>
-      {/* mostrar pagina login */}
       {pagina.LoginPage && <LoginPage/>}
     
     </div>

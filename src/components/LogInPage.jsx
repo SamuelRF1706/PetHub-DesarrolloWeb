@@ -16,7 +16,6 @@ const LoginPage = () => {
 
   return (
     <div className="container vh-100 w-100 d-flex flex-column align-items-center justify-content-center">
-      <h1>leinad tiene un culo muy rico</h1>
       <div className="row shadow p-4 rounded" style={{ maxWidth: "900px", width: "100%" }}>
         
         <div className="col-md-6 text-center d-flex flex-column align-items-center justify-content-center border-end">
