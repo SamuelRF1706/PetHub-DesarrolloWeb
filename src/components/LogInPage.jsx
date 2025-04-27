@@ -2,16 +2,26 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LogoPetHub from "../assets/image/LogoPetHub.png";
 import RegisterPage from "./RegisterPage";
+import Session from "./Session";
 
 const LoginPage = () => {
   const [showRegister, setShowRegister] = useState(false);
+  const [showSesion, setShowSesion] = useState(false);
 
   const changeShowRegister = () => {
     setShowRegister(!showRegister);
   };
 
+  const changeShowSession = () => {
+    setShowSesion(!showSesion);
+  };
+
   if (showRegister) {
     return <RegisterPage changeShowRegister={changeShowRegister} />;
+  }
+
+  if (showSesion) {
+    return <Session changeShowSession={changeShowSession}/>;
   }
 
   return (
@@ -46,7 +56,9 @@ const LoginPage = () => {
             </div>
 
             <div className="d-grid gap-2 mb-3">
-              <button type="submit" className="btn btn-dark">Iniciar sesión</button>
+              <button type="submit" className="btn btn-dark" onClick={() => changeShowSession(true)}>
+                Iniciar sesión
+              </button>
             </div>
 
             <div className="text-center mb-2">
@@ -54,11 +66,7 @@ const LoginPage = () => {
             </div>
 
             <div className="d-grid">
-              <button
-                type="button"
-                className="btn btn-outline-dark"
-                onClick={() => setShowRegister(true)}
-              >
+              <button type="button" className="btn btn-outline-dark" onClick={() => setShowRegister(true)}>
                 Crear una cuenta
               </button>
             </div>

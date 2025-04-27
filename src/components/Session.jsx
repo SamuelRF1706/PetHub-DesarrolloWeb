@@ -1,6 +1,10 @@
 import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import LogoPetHub from "../assets/image/LogoPetHub.png";
 
-const Session = () => {
+const Session = ({changeShowSession}) => {
+
+
   return (
     <div className="min-vh-100 d-flex flex-column">
       <header
@@ -15,7 +19,7 @@ const Session = () => {
         </div>
 
         <div>
-          <a className="text-decoration-underline text-dark small" onClick={changeShowRegister}>
+          <a className="text-decoration-underline text-dark small" onClick={changeShowSession}>
             Volver a la página principal
           </a>
         </div>
