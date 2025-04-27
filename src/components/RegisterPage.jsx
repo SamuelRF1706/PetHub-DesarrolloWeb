@@ -1,12 +1,40 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, use } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import LogoPetHub from "./assets/image/LogoPetHub.png";
-import { useNavigate } from "react-router-dom";
+import LogoPetHub from "../assets/image/LogoPetHub.png";
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
-const RegisterPage = () => {
+const RegisterPage = ({changeShowRegister}) => {
   const [isVet, setIsVet] = useState(false);
   const checkboxRef = useRef(null);
-  const navigate = useNavigate();
+  const [user, setUser] = useState({});
+  
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "users"));
+      const users = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log("users", users);
+      setUser(users);
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
+    }
+  };
+
+  const crearUsuario = async (e) => {
+    e.preventDefault();
+    console.log("guardando usuario", user);
+    await addDoc(collection(db, "users"), user);
+    fetchUsers();
+    setUser({});
+    
+  };
 
   useEffect(() => {
     checkboxRef.current.indeterminate = false;
@@ -15,11 +43,6 @@ const RegisterPage = () => {
   const handleCheckboxChange = () => {
     setIsVet(!isVet);
     checkboxRef.current.indeterminate = false;
-  };
-
-  const handleCreateAccount = () => {
-    // Aquí podrías enviar los datos al backend si lo necesitas
-    navigate("/registro-mascota");
   };
 
   return (
@@ -46,7 +69,7 @@ const RegisterPage = () => {
         </div>
 
         <div>
-          <a href="/" className="text-decoration-underline text-dark small">
+          <a className="text-decoration-underline text-dark small" onClick={changeShowRegister}>
             Volver a la página principal
           </a>
         </div>
@@ -57,22 +80,22 @@ const RegisterPage = () => {
           <form>
             <div className="mb-3">
               <label className="form-label">Nombres</label>
-              <input type="text" className="form-control" placeholder="Ingrese aquí" />
+              <input type="text" id = "name" className="form-control" placeholder="Ingrese aquí" value={user.name} onChange={(e) => setUser({ ...user, name: e.target.value })}/>
             </div>
 
             <div className="mb-3">
               <label className="form-label">Apellidos</label>
-              <input type="text" className="form-control" placeholder="Ingrese aquí" />
+              <input type="text" id = "lastName" className="form-control" placeholder="Ingrese aquí" value={user.lastName} onChange={(e) => setUser({ ...user, lastName: e.target.value })}/>
             </div>
 
             <div className="mb-3">
               <label className="form-label">Email</label>
-              <input type="email" className="form-control" placeholder="Ingrese aquí" />
+              <input type="email" id = "email" className="form-control" placeholder="Ingrese aquí" value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })}/>
             </div>
 
             <div className="mb-3">
               <label className="form-label">Contraseña</label>
-              <input type="password" className="form-control" placeholder="Ingrese aquí" />
+              <input type="password" id = "password" className="form-control" placeholder="Ingrese aquí" value={user.password} onChange={(e) => setUser({ ...user, password: e.target.value })}/>
             </div>
 
             <div className="form-check mb-3">
@@ -90,7 +113,7 @@ const RegisterPage = () => {
             </div>
 
             <div className="d-grid">
-              <button type="button" className="btn btn-dark" onClick={handleCreateAccount}>
+              <button type="button" className="btn btn-dark" onClick={crearUsuario}>
                 Crear una cuenta
               </button>
             </div>

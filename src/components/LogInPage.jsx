@@ -1,17 +1,22 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import LogoPetHub from "./assets/image/LogoPetHub.png";
+import LogoPetHub from "../assets/image/LogoPetHub.png";
 import RegisterPage from "./RegisterPage";
 
 const LoginPage = () => {
   const [showRegister, setShowRegister] = useState(false);
 
+  const changeShowRegister = () => {
+    setShowRegister(!showRegister);
+  };
+
   if (showRegister) {
-    return <RegisterPage />;
+    return <RegisterPage changeShowRegister={changeShowRegister} />;
   }
 
   return (
-    <div className="container vh-100 d-flex align-items-center justify-content-center">
+    <div className="container vh-100 w-100 d-flex flex-column align-items-center justify-content-center">
+      <h1>leinad tiene un culo muy rico</h1>
       <div className="row shadow p-4 rounded" style={{ maxWidth: "900px", width: "100%" }}>
         
         <div className="col-md-6 text-center d-flex flex-column align-items-center justify-content-center border-end">
