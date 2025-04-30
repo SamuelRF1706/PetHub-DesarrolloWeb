@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LogoPetHub from "../assets/image/LogoPetHub.png";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase";
 
 const RegisterPage = ({changeShowRegister}) => {
@@ -9,29 +9,11 @@ const RegisterPage = ({changeShowRegister}) => {
   const checkboxRef = useRef(null);
   const [user, setUser] = useState({});
   
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      const users = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      console.log("users", users);
-      setUser(users);
-    } catch (error) {
-      console.error("Error al obtener usuarios:", error);
-    }
-  };
 
   const crearUsuario = async (e) => {
     e.preventDefault();
-    console.log("guardando usuario", user);
+    alert("guardando usuario", user);
     await addDoc(collection(db, "users"), user);
-    fetchUsers();
     setUser({});
     
   };
