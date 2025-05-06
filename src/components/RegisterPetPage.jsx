@@ -1,77 +1,85 @@
-import { useState } from 'react';
+import { useState } from "react";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Agregar Storage
+import LogoPetHub from "../assets/image/LogoPetHub.png";
 
-function RegisterPetPage() {
+function RegisterPetPage({ userEmail }) {
+  const [nombre, setNombre] = useState("");
+  const [especie, setEspecie] = useState("");
+  const [raza, setRaza] = useState("");
+  const [edad, setEdad] = useState("");
+  const [image, setImage] = useState(null); // Estado para la imagen
+  const [imageUrl, setImageUrl] = useState(""); // Estado para la URL de la imagen cargada
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      // Subir la imagen si se seleccionó
+      let imageUrl = "";
+      if (image) {
+        const storage = getStorage();
+        const storageRef = ref(storage, `pets/${image.name}`);
+        await uploadBytes(storageRef, image);
+        imageUrl = await getDownloadURL(storageRef);
+      }
+
+      // Guardar datos de la mascota en Firestore
+      await addDoc(collection(db, "pets"), {
+        ownerName: userName,
+        nombre,
+        especie,
+        raza,
+        edad: Number(edad),
+        imageUrl: imageUrl, // Guardar la URL de la imagen
+      });
+
+      alert("Mascota registrada correctamente. Recarga para ver los datos.");
+    } catch (error) {
+      console.error("Error al registrar mascota:", error);
+    }
+  };
+
   return (
-    <div className="min-vh-100 d-flex flex-column">
-      <header
-  className="d-flex justify-content-between align-items-center p-3 border-bottom"
-  style={{ backgroundColor: "#d4edda" }}
->
-  {/* Logo, nombre y slogan a la izquierda */}
-  <div className="d-flex align-items-center">
-    <img
-      src={LogoPetHub}
-      alt="Logo PetHub"
-      style={{
-        height: "60px",
-        width: "60px",
-        objectFit: "cover",
-        marginRight: "10px",
-      }}
-    />
-    <div>
-      <h5 className="mb-0 fw-bold">PetHub</h5>
-      <small className="text-muted">Donde cada mascota tiene su espacio especial.</small>
-    </div>
-  </div>
-
-  {/* Enlace a la derecha */}
-  <div>
-    <a href="/" className="text-decoration-underline text-dark small">
-      Volver a la página principal
-    </a>
-  </div>
-</header>
     <div className="col-md-6 mx-auto my-5">
-      <form>
+      <h4 className="mb-4">Registrar Mascota</h4>
+      <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label">Nombre mascota</label>
-          <input type="text" className="form-control" placeholder="Ingrese aquí" />
+          <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} />
         </div>
-
         <div className="mb-3">
           <label className="form-label">Especie</label>
-          <input type="text" className="form-control" placeholder="Ingrese aquí" />
+          <input type="text" className="form-control" value={especie} onChange={(e) => setEspecie(e.target.value)} />
         </div>
-
         <div className="mb-3">
           <label className="form-label">Raza</label>
-          <input type="text" className="form-control" placeholder="Ingrese aquí" />
+          <input type="text" className="form-control" value={raza} onChange={(e) => setRaza(e.target.value)} />
         </div>
-
         <div className="mb-3">
           <label className="form-label">Edad</label>
-          <input type="number" className="form-control" placeholder="Ingrese aquí" />
+          <input type="number" className="form-control" value={edad} onChange={(e) => setEdad(e.target.value)} />
         </div>
 
+        {/* Input para seleccionar la imagen */}
         <div className="mb-3">
-          <label className="form-label">Foto</label>
-          <input type="file" className="btn btn-outline-secondary w-100" />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Cargar historial médico</label>
-          <input type="file" className="btn btn-outline-secondary w-100" />
+          <label className="form-label">Imagen de la mascota</label>
+          <input type="file" className="form-control" onChange={handleImageChange} />
         </div>
 
         <div className="d-grid">
-          <button type="submit" className="btn btn-dark">
-            Crear una cuenta y perfil
-          </button>
+          <button type="submit" className="btn btn-dark">Registrar mascota</button>
         </div>
       </form>
     </div>
-    /</div>
   );
 }
 

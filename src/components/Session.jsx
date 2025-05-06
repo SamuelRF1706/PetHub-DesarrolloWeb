@@ -1,8 +1,17 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LogoPetHub from "../assets/image/LogoPetHub.png";
+import RegisterPetPage from "./RegisterPetPage";
 
 const Session = ({ changeShowSession }) => {
+  const [showRegisterPet, setShowRegisterPet] = useState(false);
+  const changeShowRegisterPet = () => {
+    setShowRegisterPet(!showRegisterPet);
+  };
+
+if (showRegisterPet) {
+  return <RegisterPetPage changeShowRegisterPet={changeShowRegisterPet} />;
+  }
   return (
     <div className="min-vh-100 d-flex flex-column">
       <header
@@ -32,6 +41,8 @@ const Session = ({ changeShowSession }) => {
       <main className="container mt-4">
         <h2 className="text-center">¡Bienvenido a tu sesión!</h2>
         {/* Aquí puedes agregar más contenido de la sesión */}
+        <button onClick={changeShowRegisterPet}>Agregar mascota</button>
+
       </main>
     </div>
   );
