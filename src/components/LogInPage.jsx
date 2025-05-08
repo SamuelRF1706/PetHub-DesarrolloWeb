@@ -13,6 +13,9 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [userName, setUserName] = useState("");
+  const [userId, setUserId] = useState("");
+
 
   const changeShowRegister = () => {
     setShowRegister(!showRegister);
@@ -24,45 +27,49 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     if (!email || !password) {
       setError("Por favor complete todos los campos.");
       return;
     }
+  
     console.log("Iniciando sesión con:", email, password);
-
+  
     try {
-      const usuariosRef = collection(db, "users"); // tu colección
+      const usuariosRef = collection(db, "users"); 
       const q = query(usuariosRef, where("email", "==", email));
       const querySnapshot = await getDocs(q);
-      const user = querySnapshot.docs[0]?.data(); // Obtener el primer documento que coincida
-      console.log(password, user.password)
-      if (!user || user.password !== password) {	
+      const docSnap = querySnapshot.docs[0]; 
+      const user = docSnap?.data(); 
+  
+      if (!user || user.password !== password) {  
         setError("Usuario o contraseña incorrectos.");
+        console.log("Error: Usuario o contraseña incorrectos.");
         return;
-
       }
-      console.log("ENTRE")
+  
+      console.log("Inicio de sesión exitoso");
+  
       setError("");
-      changeShowSession(); // Redirige a la página de sesión sin recargar
+      setUserName(user.name);    
+      setUserId(docSnap.id);     
+      console.log("Nombre del usuario:", user.name);
+      console.log("ID del usuario:", docSnap.id);
+  
+      changeShowSession();      
     } catch (error) {
-      console.error(error); // Para ver más detalles en la consola
-      if (error.code === "auth/user-not-found") {
-        setError("El usuario no existe.");
-      } else if (error.code === "auth/wrong-password") {
-        setError("Contraseña incorrecta.");
-      } else {
-        setError("Error al iniciar sesión.");
-      }
+      console.error(error); 
+      setError("Error al iniciar sesión.");
     }
   };
+  
 
   if (showRegister) {
     return <RegisterPage changeShowRegister={changeShowRegister} />;
   }
 
   if (showSesion) {
-    return <Session changeShowSession={changeShowSession} />;
+    return <Session changeShowSession={changeShowSession} userName={userName} userId={userId} />;
   }
 
   return (

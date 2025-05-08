@@ -1,28 +1,33 @@
-import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth"; 
-import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAU6rqG67-_S5uhMwdTD6cziIUDoT0blBo",
-  authDomain: "pethub-a0459.firebaseapp.com",
-  projectId: "pethub-a0459",
-  storageBucket: "pethub-a0459.firebasestorage.app",
-  messagingSenderId: "421694664421",
-  appId: "1:421694664421:web:511514d45ef8d81f36ee0c",
-  measurementId: "G-4CQGELWBC9"
+  apiKey: "AIzaSyBUctcCf4qAQjv1IqtI1HDCcQ1CBgy5CwQ",
+  authDomain: "pethub-desarrollo-ccfab.firebaseapp.com",
+  projectId: "pethub-desarrollo-ccfab",
+  storageBucket: "pethub-desarrollo-ccfab.appspot.com",
+  messagingSenderId: "1031837147438",
+  appId: "1:1031837147438:web:a9fe114766f685494d9abf",
+  measurementId: "G-N4ZQX03RBR"
 };
 
-// Inicializa la app
 const app = initializeApp(firebaseConfig);
 
-// Inicializa auth
 const auth = getAuth(app);
-
-// Inicializa Firestore
 const db = getFirestore(app);
-
-// Analytics (opcional)
 const analytics = getAnalytics(app);
+export const storage = getStorage(app);
+
+export async function uploadFile(file, userId) {
+  const storageRef = ref(storage, `users/${userId}/pets/${file.name}`);
+
+  await uploadBytes(storageRef, file);
+  const urlPhoto = await getDownloadURL(storageRef);
+  return urlPhoto;
+  
+}
 
 export { auth, db, analytics };

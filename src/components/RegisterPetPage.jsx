@@ -1,82 +1,128 @@
 import { useState } from "react";
 import { collection, addDoc } from "firebase/firestore";
-import { db } from "../firebase";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Agregar Storage
+import { db, uploadFile } from "../firebase";
 import LogoPetHub from "../assets/image/LogoPetHub.png";
+import Session from "./Session";
 
-function RegisterPetPage({ userEmail }) {
-  const [nombre, setNombre] = useState("");
-  const [especie, setEspecie] = useState("");
-  const [raza, setRaza] = useState("");
-  const [edad, setEdad] = useState("");
-  const [image, setImage] = useState(null); // Estado para la imagen
-  const [imageUrl, setImageUrl] = useState(""); // Estado para la URL de la imagen cargada
+function RegisterPetPage({ changeShowRegisterPet, userId, userName }) {
+  const [pet, setPet] = useState({});
+  const [showSession, setShowSession] = useState(false);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-    }
+  const changeShowSession = () => {
+    setShowSession(!showSession);
   };
 
-  const handleSubmit = async (e) => {
+  if (showSession) {
+    return <Session changeShowSession={changeShowSession} userId={userId} />;
+  }
+
+  const crearMascota = async (e) => {
     e.preventDefault();
 
-    try {
-      // Subir la imagen si se seleccionó
-      let imageUrl = "";
-      if (image) {
-        const storage = getStorage();
-        const storageRef = ref(storage, `pets/${image.name}`);
-        await uploadBytes(storageRef, image);
-        imageUrl = await getDownloadURL(storageRef);
-      }
+    if (!userId) {
+      alert("Error: No se ha identificado el usuario.");
+      return;
+    }
 
-      // Guardar datos de la mascota en Firestore
-      await addDoc(collection(db, "pets"), {
-        ownerName: userName,
-        nombre,
-        especie,
-        raza,
-        edad: Number(edad),
-        imageUrl: imageUrl, // Guardar la URL de la imagen
+    if (!pet.image) {
+      alert("Por favor selecciona una imagen.");
+      return;
+    }
+
+    try {
+      // Subir la imagen a Firebase Storage
+      // const imageUrl = await uploadFile(pet.image, userId);
+      // console.log("Imagen subida correctamente:", imageUrl);
+
+      await addDoc(collection(db, "users", userId, "pets"), {
+        nombre: pet.nombre,
+        especie: pet.especie,
+        raza: pet.raza,
+        edad: pet.edad
+        // image: imageUrl
       });
 
-      alert("Mascota registrada correctamente. Recarga para ver los datos.");
+      alert("Mascota registrada correctamente");
+      setPet({});
     } catch (error) {
       console.error("Error al registrar mascota:", error);
+      alert("Hubo un error al registrar la mascota.");
     }
   };
 
   return (
     <div className="col-md-6 mx-auto my-5">
+      <header className="d-flex justify-content-between align-items-center p-3 border-bottom" style={{ backgroundColor: "#d4edda" }}>
+        <div className="d-flex align-items-center">
+          <img
+            src={LogoPetHub}
+            alt="Logo PetHub"
+            style={{ height: "60px", width: "60px", objectFit: "cover", marginRight: "10px" }}
+          />
+          <div>
+            <h5 className="mb-0 fw-bold">PetHub</h5>
+            <small className="text-muted">Donde cada mascota tiene su espacio especial.</small>
+          </div>
+        </div>
+        <div>
+          <a className="text-decoration-underline text-dark small" onClick={changeShowRegisterPet}>
+            Volver a la página principal
+          </a>
+        </div>
+      </header>
+
       <h4 className="mb-4">Registrar Mascota</h4>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={crearMascota}>
         <div className="mb-3">
           <label className="form-label">Nombre mascota</label>
-          <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+          <input
+            type="text"
+            className="form-control"
+            value={pet.nombre || ""}
+            onChange={(e) => setPet({ ...pet, nombre: e.target.value })}
+          />
         </div>
         <div className="mb-3">
           <label className="form-label">Especie</label>
-          <input type="text" className="form-control" value={especie} onChange={(e) => setEspecie(e.target.value)} />
+          <input
+            type="text"
+            className="form-control"
+            value={pet.especie || ""}
+            onChange={(e) => setPet({ ...pet, especie: e.target.value })}
+          />
         </div>
         <div className="mb-3">
           <label className="form-label">Raza</label>
-          <input type="text" className="form-control" value={raza} onChange={(e) => setRaza(e.target.value)} />
+          <input
+            type="text"
+            className="form-control"
+            value={pet.raza || ""}
+            onChange={(e) => setPet({ ...pet, raza: e.target.value })}
+          />
         </div>
         <div className="mb-3">
           <label className="form-label">Edad</label>
-          <input type="number" className="form-control" value={edad} onChange={(e) => setEdad(e.target.value)} />
+          <input
+            type="number"
+            className="form-control"
+            value={pet.edad || ""}
+            onChange={(e) => setPet({ ...pet, edad: e.target.value })}
+          />
         </div>
 
-        {/* Input para seleccionar la imagen */}
         <div className="mb-3">
           <label className="form-label">Imagen de la mascota</label>
-          <input type="file" className="form-control" onChange={handleImageChange} />
+          <input
+            type="file"
+            className="form-control"
+            onChange={(e) => setPet({ ...pet, image: e.target.files[0] })}
+          />
         </div>
 
         <div className="d-grid">
-          <button type="submit" className="btn btn-dark">Registrar mascota</button>
+          <button type="submit" className="btn btn-dark">
+            Registrar mascota
+          </button>
         </div>
       </form>
     </div>
