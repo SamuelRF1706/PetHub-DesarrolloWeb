@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import LogoPetHub from "../assets/image/LogoPetHub.png";
 import RegisterPage from "./RegisterPage";
 import Session from "./Session";
+import SessionVet from "./SessionVet";
 import { db } from "../firebase";
 import { getDocs, query, where } from "firebase/firestore";
 import { collection } from "firebase/firestore";
@@ -21,56 +22,63 @@ const LoginPage = () => {
     setShowRegister(!showRegister);
   };
 
-  const changeShowSession = () => {
-    setShowSesion(!showSesion);
+  const changeShowSession = (type) => {
+    setShowSesion(type); 
   };
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+
     if (!email || !password) {
       setError("Por favor complete todos los campos.");
       return;
     }
-  
-    console.log("Iniciando sesión con:", email, password);
-  
+
     try {
       const usuariosRef = collection(db, "users"); 
       const q = query(usuariosRef, where("email", "==", email));
       const querySnapshot = await getDocs(q);
       const docSnap = querySnapshot.docs[0]; 
       const user = docSnap?.data(); 
-  
-      if (!user || user.password !== password) {  
+
+      if (!user || user.password !== password) {
         setError("Usuario o contraseña incorrectos.");
-        console.log("Error: Usuario o contraseña incorrectos.");
         return;
       }
-  
-      console.log("Inicio de sesión exitoso");
-  
+
       setError("");
-      setUserName(user.name);    
-      setUserId(docSnap.id);     
-      console.log("Nombre del usuario:", user.name);
-      console.log("ID del usuario:", docSnap.id);
-  
-      changeShowSession();      
+      setUserName(user.name);
+      setUserId(docSnap.id);
+
+      if (user.isVet === true) {
+        changeShowSession("vet");
+      } else {
+        changeShowSession("normal");
+      }
+
     } catch (error) {
-      console.error(error); 
+      console.error(error);
       setError("Error al iniciar sesión.");
     }
   };
+
+
   
 
   if (showRegister) {
     return <RegisterPage changeShowRegister={changeShowRegister} />;
   }
 
-  if (showSesion) {
+  if (showSesion === "vet") {
+    return <SessionVet changeShowSession={changeShowSession} userName={userName} userId={userId} />;
+  }
+
+  if (showSesion === "normal") {
     return <Session changeShowSession={changeShowSession} userName={userName} userId={userId} />;
   }
+
+
 
   return (
     <div className="container vh-100 w-100 d-flex flex-column align-items-center justify-content-center">

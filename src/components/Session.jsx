@@ -13,6 +13,10 @@ const Session = ({ changeShowSession, userName, userId }) => {
     setShowRegisterPet(!showRegisterPet);
   };
 
+  const updateNewPet = (newPet) => {
+    setPets((prevPets) => [...prevPets, newPet]);
+  };
+
   useEffect(() => {
     const fetchPets = async () => {
       try {

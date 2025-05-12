@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import LogoPetHub from "../assets/image/LogoPetHub.png";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebase";
+import Swal from "sweetalert2";
 
 const RegisterPage = ({ changeShowRegister }) => {
   const [isVet, setIsVet] = useState(false);
@@ -19,12 +20,22 @@ const RegisterPage = ({ changeShowRegister }) => {
 
     try {
       await addDoc(collection(db, "users"), usuarioConRol);
-      alert("Usuario creado exitosamente");
+      Swal.fire({ 
+        icon: "success",
+        title: "Usuario creado",
+        text: "El usuario ha sido creado exitosamente.",
+        confirmButtonText: "Aceptar",
+      });
       setUser({});
       setIsVet(false);
     } catch (error) {
       console.error("Error al guardar el usuario:", error);
-      alert("Hubo un error al guardar el usuario.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo crear el usuario. Por favor, inténtelo de nuevo.",
+        confirmButtonText: "Aceptar",
+      });
     }
   };
 
@@ -145,3 +156,4 @@ const RegisterPage = ({ changeShowRegister }) => {
 };
 
 export default RegisterPage;
+ 
