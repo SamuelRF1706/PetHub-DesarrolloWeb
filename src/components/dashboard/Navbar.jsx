@@ -1,4 +1,5 @@
 import { use, useEffect, useState } from "react"
+import logo from '../../assets/LogoPetHub.png';
 
 export const Navbar = ({logout}) => {
 
@@ -12,7 +13,8 @@ export const Navbar = ({logout}) => {
     return (
         <div className='d-flex justify-content-between align-items-center bg-success p-3'>
         <div>
-            <h2>LOGO</h2>
+            {/* logo pethub */}
+            <img src={logo} alt="logo" width="100px" />
         </div>
         <div>
             <h4>Hola, {name} bienvenido de vuelta</h4>
