@@ -4,14 +4,22 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
+const apiKey = import.meta.env.VITE_FIREBASE_KEY;
+const authDomain = import.meta.env.VITE_FIREBASE_AUTH_DOMAIN;
+const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+const storageBucket = import.meta.env.VITE_FIREBASE_STORAGE_BUCKET;
+const messagingSenderId = import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID;
+const appId = import.meta.env.VITE_FIREBASE_APP_ID;
+const measurementId = import.meta.env.VITE_FIREBASE_MEASUREMENT_ID;
+
 const firebaseConfig = {
-  apiKey: "AIzaSyBUctcCf4qAQjv1IqtI1HDCcQ1CBgy5CwQ",
-  authDomain: "pethub-desarrollo-ccfab.firebaseapp.com",
-  projectId: "pethub-desarrollo-ccfab",
-  storageBucket: "pethub-desarrollo-ccfab.appspot.com",
-  messagingSenderId: "1031837147438",
-  appId: "1:1031837147438:web:a9fe114766f685494d9abf",
-  measurementId: "G-N4ZQX03RBR"
+  apiKey,
+  authDomain,
+  projectId,
+  storageBucket,
+  messagingSenderId,
+  appId,
+  measurementId
 };
 
 const app = initializeApp(firebaseConfig);
