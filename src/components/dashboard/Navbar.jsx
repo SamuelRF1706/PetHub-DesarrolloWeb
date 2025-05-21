@@ -11,16 +11,15 @@ export const Navbar = ({logout}) => {
     },[])
 
     return (
-        <div className='d-flex justify-content-between align-items-center bg-success p-3'>
+        <div className='d-flex justify-content-between align-items-center verdequeQuiero p-3'>
         <div>
-            {/* logo pethub */}
             <img src={logo} alt="logo" width="100px" />
         </div>
         <div>
             <h4>Hola, {name} bienvenido de vuelta</h4>
         </div>
         <div>
-            <button className='btn btn-primary' onClick={logout}>Cerrar sesión</button>
+            <button className='btn btn-outline-light' onClick={logout}>Cerrar sesión</button>
         </div>
         </div>
     )
