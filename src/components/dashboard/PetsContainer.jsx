@@ -31,7 +31,7 @@ export const PetsContainer = () => {
                 newPetFlag ? 
                 <RegisterPet back={back} />:
                 <div>
-                    <button className="btn btn-primary" onClick={() => setNewPetFlag(true)}>Agregar mascota</button>
+                    <button className="btn btn-outline-dark" onClick={() => setNewPetFlag(true)}>Agregar mascota</button>
                     <div className="row mt-3">
                         {
                             pets.length > 0 ?
