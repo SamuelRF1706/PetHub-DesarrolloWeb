@@ -1,7 +1,6 @@
-// src/components/Appointment.jsx
 import React, { useState } from "react";
 
-const Appointment = () => {
+const Appointment = ({ back }) => {
   const [formData, setFormData] = useState({
     ownerName: "",
     petName: "",
@@ -28,6 +27,7 @@ const Appointment = () => {
       date: "",
       time: "",
     });
+    back(); // 👈 opcional: volver automáticamente después de agendar
   };
 
   return (
@@ -104,8 +104,16 @@ const Appointment = () => {
           />
         </div>
 
-        <button type="submit" className="btn btn-primary w-100">
+        <button type="submit" className="btn btn-primary w-100 mb-2">
           Agendar Cita
+        </button>
+
+        <button
+          type="button"
+          className="btn btn-secondary w-100"
+          onClick={back} // 👈 este es el que regresa al listado de mascotas
+        >
+          ← Regresar
         </button>
       </form>
     </div>
