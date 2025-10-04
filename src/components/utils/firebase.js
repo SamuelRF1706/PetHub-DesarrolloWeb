@@ -1,6 +1,7 @@
+// src/components/utils/firebase.js
+import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
-import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
@@ -30,7 +31,7 @@ const app = initializeApp(firebaseConfig);
 // 🔹 Servicios principales
 const auth = getAuth(app);
 const db = getFirestore(app);
-export const storage = getStorage(app);
+const storage = getStorage(app);
 
 // 🔹 Analytics (solo si está disponible, evita errores en localhost)
 let analytics;
@@ -50,5 +51,5 @@ export async function uploadFile(file, userId) {
   return urlPhoto;
 }
 
-// Exportar servicios
-export { auth, db, analytics };
+// 🔹 Exportar servicios
+export { app, auth, db, storage, analytics };
