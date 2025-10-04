@@ -1,60 +1,108 @@
 import { useEffect, useState } from "react";
-import { getAuth } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { app } from "../utils/firebase"; // 👈 tu config de firebase.js
-
-const db = getFirestore(app);
+import { db } from "../utils/firebase"; // igual que en tu auth.service
+import { doc, getDoc } from "firebase/firestore";
 
 export const AccountInfo = ({ back }) => {
-  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState({
+    name: "Sin nombre",
+    lastName: "Sin apellido",
+    email: "Sin correo",
+    role: "Sin rol",
+  });
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const auth = getAuth();
-    const user = auth.currentUser;
+    const readLocal = () => {
+      // varias claves posibles para compatibilidad
+      const fullName = localStorage.getItem("user_name") || localStorage.getItem("name") || localStorage.getItem("first_name") || "";
+      const firstName = localStorage.getItem("first_name") || "";
+      const lastName = localStorage.getItem("last_name") || localStorage.getItem("user_lastName") || "";
+      const email = localStorage.getItem("email") || localStorage.getItem("user_email") || localStorage.getItem("userEmail") || localStorage.getItem("correo") || "";
+      const role = localStorage.getItem("role") || localStorage.getItem("user_role") || "";
+      const userId = localStorage.getItem("user_id") || localStorage.getItem("userId") || localStorage.getItem("user_id");
 
-    if (user) {
-      // Datos básicos de Firebase Auth
-      const basicInfo = {
-        uid: user.uid,
-        email: user.email,
-        name: user.displayName || "Sin nombre",
-        photo: user.photoURL,
-      };
-
-      // Ahora intentamos traer más datos desde Firestore
-      const userRef = doc(db, "users", user.uid);
-      getDoc(userRef).then((docSnap) => {
-        if (docSnap.exists()) {
-          setUserData({ ...basicInfo, ...docSnap.data() });
+      // derive name/lastname if needed
+      let nameVal = firstName || "";
+      let lastVal = lastName || "";
+      if (!firstName && fullName) {
+        const parts = fullName.trim().split(/\s+/);
+        if (parts.length > 1) {
+          nameVal = parts[0];
+          lastVal = parts.slice(1).join(" ");
         } else {
-          setUserData(basicInfo);
+          nameVal = fullName;
         }
-      });
-    }
+      }
+
+      return { nameVal, lastVal, email, role, userId };
+    };
+
+    (async () => {
+      try {
+        const local = readLocal();
+
+        // Si ya tenemos email y apellido local, mostramos eso
+        if (local.email && (local.lastVal || local.nameVal)) {
+          setUserData({
+            name: local.nameVal || "Sin nombre",
+            lastName: local.lastVal || "Sin apellido",
+            email: local.email || "Sin correo",
+            role: local.role || "Sin rol",
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Si falta algo e existe user_id -> leer Firestore por doc id
+        if (local.userId) {
+          const docRef = doc(db, "users", local.userId);
+          const snap = await getDoc(docRef);
+          if (snap.exists()) {
+            const d = snap.data();
+            setUserData({
+              name: d.name || local.nameVal || "Sin nombre",
+              lastName: d.lastName || local.lastVal || "Sin apellido",
+              email: d.email || local.email || "Sin correo",
+              role: d.role || local.role || "Sin rol",
+            });
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Intento final: si hay algún email local aun si no hay apellido
+        setUserData({
+          name: local.nameVal || "Sin nombre",
+          lastName: local.lastVal || "Sin apellido",
+          email: local.email || "Sin correo",
+          role: local.role || "Sin rol",
+        });
+        setLoading(false);
+      } catch (err) {
+        console.error("Error cargando AccountInfo:", err);
+        setError("Error cargando datos del usuario");
+        setLoading(false);
+      }
+    })();
   }, []);
 
-  if (!userData) return <p>Cargando datos del usuario...</p>;
+  if (loading) return <p>Cargando datos del usuario...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div className="text-light p-3">
       <h2>Información de la cuenta</h2>
-      <p><strong>UID:</strong> {userData.uid}</p>
-      <p><strong>Email:</strong> {userData.email}</p>
       <p><strong>Nombre:</strong> {userData.name}</p>
-      {userData.phone && <p><strong>Teléfono:</strong> {userData.phone}</p>}
-      {userData.role && <p><strong>Rol:</strong> {userData.role}</p>}
-      {userData.photo && (
-        <img
-          src={userData.photo}
-          alt="Foto de perfil"
-          className="rounded-circle"
-          width={100}
-        />
-      )}
+      <p><strong>Apellido:</strong> {userData.lastName}</p>
+      <p><strong>Correo electrónico:</strong> {userData.email}</p>
+      <p><strong>Rol:</strong> {userData.role}</p>
 
-      <button className="btn btn-secondary mt-3" onClick={back}>
-        Regresar
-      </button>
+      {back && (
+        <button className="btn btn-secondary mt-3" onClick={back}>
+          Regresar
+        </button>
+      )}
     </div>
   );
 };
