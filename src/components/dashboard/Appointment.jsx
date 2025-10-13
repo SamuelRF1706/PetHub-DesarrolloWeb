@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { createAppointment } from "../../services/appointment.service";
+import Swal from "sweetalert2";
 
 const Appointment = ({ back }) => {
   const [formData, setFormData] = useState({
@@ -8,6 +10,7 @@ const Appointment = ({ back }) => {
     date: "",
     time: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,17 +20,36 @@ const Appointment = ({ back }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Cita agendada para ${formData.petName} con ${formData.ownerName}`);
-    setFormData({
-      ownerName: "",
-      petName: "",
-      service: "",
-      date: "",
-      time: "",
-    });
-    back(); // 👈 opcional: volver automáticamente después de agendar
+    setLoading(true);
+    try {
+      await createAppointment(formData);
+      Swal.fire({
+        icon: "success",
+        title: "¡Éxito!",
+        text: `Cita agendada para ${formData.petName} con ${formData.ownerName}`,
+        confirmButtonText: "Aceptar"
+      });
+      setFormData({
+        ownerName: "",
+        petName: "",
+        service: "",
+        date: "",
+        time: "",
+      });
+      back();
+    } catch (error) {
+      console.error("Error al agendar cita:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo agendar la cita. Por favor, intente nuevamente.",
+        confirmButtonText: "Aceptar"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -104,14 +126,26 @@ const Appointment = ({ back }) => {
           />
         </div>
 
-        <button type="submit" className="btn btn-primary w-100 mb-2">
-          Agendar Cita
+        <button 
+          type="submit" 
+          className="btn btn-primary w-100 mb-2"
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Agendando...
+            </>
+          ) : (
+            "Agendar Cita"
+          )}
         </button>
 
         <button
           type="button"
           className="btn btn-secondary w-100"
-          onClick={back} // 👈 este es el que regresa al listado de mascotas
+          onClick={back}
+          disabled={loading}
         >
           ← Regresar
         </button>

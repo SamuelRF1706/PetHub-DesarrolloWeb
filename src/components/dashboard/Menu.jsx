@@ -13,6 +13,13 @@ export const Menu = ({ onChangeView }) => {
       >
         <h4>Mascotas</h4>
       </div>
+
+    <div className="cursor-pointer border-bottom"
+        onClick={() => onChangeView("appointments")}
+    >
+      <h4>Mis Citas</h4>
+    </div>
+
     </div>
   );
 };
