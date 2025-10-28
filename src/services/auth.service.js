@@ -62,6 +62,18 @@ const isAuthenticated = () => {
   return isAuthenticate;
 };
 
+const checkEmailExists = async (email) => {
+  try {
+    const usuariosRef = collection(db, "users");
+    const q = query(usuariosRef, where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.length > 0;
+  } catch (error) {
+    console.error("Error verificando email:", error);
+    throw error;
+  }
+};
+
 const registerNewUser = async (user) => {
   if (user.password != user.password2) {
     Swal.fire({
@@ -69,8 +81,29 @@ const registerNewUser = async (user) => {
       title: "Oops...",
       text: "Las contraseñas no coinciden!",
     });
-    return;
+    return false;
   }
+
+  try {
+    const emailExists = await checkEmailExists(user.email);
+    if (emailExists) {
+      Swal.fire({
+        icon: "error",
+        title: "Email ya registrado",
+        text: "Este correo electrónico ya está registrado en el sistema.",
+      });
+      return false;
+    }
+  } catch (error) {
+    console.error("Error verificando email:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Hubo un error verificando el email, por favor intente nuevamente.",
+    });
+    return false;
+  }
+
   const { password2, ...newUser } = user;
 
   try {
@@ -91,4 +124,4 @@ const registerNewUser = async (user) => {
   }
 };
 
-export { login, logout, isAuthenticated, registerNewUser };
+export { login, logout, isAuthenticated, registerNewUser, checkEmailExists };

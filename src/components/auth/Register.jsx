@@ -8,30 +8,38 @@ export const Register = ({goToLogin}) => {
 
 	const [user, setUser] = useState({});
 
-	const validarEmailUserExists = async (email) => { 
-	
-
-	}
-
-	
+	const [loading, setLoading] = useState(false);
 
 	const createUser = async (e) => {
-		
-		const emailUser = localStorage.getItem("email") || localStorage.getItem("user_email") || localStorage.getItem("userEmail") || localStorage.getItem("correo") || "";
-		if (email === emailUser) {
+		e.preventDefault();
+		if (!user.email || !user.password || !user.password2 || !user.name || !user.lastName) {
 			Swal.fire({
 				icon: "error",
-				text: "El email ya está registrado",
-				title: "Error",
-				confirmButtonText: "Aceptar",
+				title: "Campos incompletos",
+				text: "Por favor complete todos los campos del formulario.",
+				confirmButtonText: "Aceptar"
 			});
 			return;
-		} else {
-			e.preventDefault();
-			registerNewUser({...user, role: "USER"})
-			setUser({});
 		}
-		
+
+		setLoading(true);
+		try {
+			const success = await registerNewUser({...user, role: "USER"});
+			if (success !== false) {
+				setUser({});
+				goToLogin();
+			}
+		} catch (error) {
+			console.error("Error en registro:", error);
+			Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: "Hubo un error durante el registro. Por favor intente nuevamente.",
+				confirmButtonText: "Aceptar"
+			});
+		} finally {
+			setLoading(false);
+		}
 	}
     return (
 		<div className="d-flex flex-column justify-content-center align-items-center h-100 p-0">
@@ -89,7 +97,20 @@ export const Register = ({goToLogin}) => {
 					/>
             	</div>
 				<div className='d-flex flex-column justify-content-center'>
-					<button className='btn btn-primary' onClick={createUser}>Registrarse</button>
+					<button 
+						className='btn btn-primary' 
+						onClick={createUser}
+						disabled={loading}
+					>
+						{loading ? (
+							<>
+								<span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+								Registrando...
+							</>
+						) : (
+							"Registrarse"
+						)}
+					</button>
 					<span className='text-primary text-decoration-underline cursor-pointer' onClick={goToLogin}>Ya tengo cuenta</span>
 				</div>
 			</div>

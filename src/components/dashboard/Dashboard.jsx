@@ -1,6 +1,8 @@
 import { PetsContainer } from "./PetsContainer";
 import { AccountInfo } from "./AccountInfo";
 import { AppointmentList } from "./AppointmentList";
+import { VetAppointments } from "./VetAppointments";
+import { MedicalRecords } from "./MedicalRecords";
 
 export const Dashboard = ({ view, setView }) => {
   return (
@@ -8,6 +10,8 @@ export const Dashboard = ({ view, setView }) => {
       {view === "pets" && <PetsContainer />}
       {view === "account" && <AccountInfo back={() => setView("pets")} />}
       {view === "appointments" && <AppointmentList />}
+      {view === "vet-appointments" && <VetAppointments />}
+      {view === "medical-records" && <MedicalRecords />}
     </div>
   );
 };
