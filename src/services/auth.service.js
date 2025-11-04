@@ -1,6 +1,5 @@
 import Swal from "sweetalert2";
-import { db } from "../components/utils/firebase";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import axios from "axios";
 
 const login = async (email, password) => {
   if (!email || !password) {
@@ -63,15 +62,9 @@ const isAuthenticated = () => {
 };
 
 const checkEmailExists = async (email) => {
-  try {
-    const usuariosRef = collection(db, "users");
-    const q = query(usuariosRef, where("email", "==", email));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.length > 0;
-  } catch (error) {
-    console.error("Error verificando email:", error);
-    throw error;
-  }
+  // Optional: backend may provide a check-email endpoint. For now, return false to let register attempt the POST
+  // If you have an endpoint like /auth/check-email you can implement it here with axios.get
+  return false;
 };
 
 const registerNewUser = async (user) => {
@@ -107,20 +100,28 @@ const registerNewUser = async (user) => {
   const { password2, ...newUser } = user;
 
   try {
-    await addDoc(collection(db, "users"), newUser);
+    // Endpoint proporcionado por el usuario
+    const apiUrl = "https://pethub-backend-rrpn.onrender.com/users/createUser";
+    const token = localStorage.getItem("auth_token") || localStorage.getItem("token") || "";
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers.Authorization = `Bearer ${token}`;
+
+    const res = await axios.post(apiUrl, newUser, { headers });
     Swal.fire({
       icon: "success",
       title: "Usuario creado",
-      text: "El usuario ha sido creado exitosamente.",
+      text: res.data?.message || "El usuario ha sido creado exitosamente.",
       confirmButtonText: "Aceptar",
     });
+    return true;
   } catch (error) {
-    console.log(error);
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Hubo un error creando el usuario, contacta al administrador!",
-    });
+    console.error("Error creando usuario via API:", error?.response?.data || error.message || error);
+    if (error?.response?.status === 409 || error?.response?.data?.message?.toLowerCase()?.includes("exist")) {
+      Swal.fire({ icon: "error", title: "Email ya registrado", text: error.response.data?.message || "Este correo electrónico ya está registrado en el sistema." });
+      return false;
+    }
+    Swal.fire({ icon: "error", title: "Oops...", text: error?.response?.data?.message || "Hubo un error creando el usuario, contacta al administrador!" });
+    return false;
   }
 };
 
