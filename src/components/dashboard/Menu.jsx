@@ -30,6 +30,15 @@ export const Menu = ({ onChangeView }) => {
       {isVet && (
         <div
           className="cursor-pointer border-bottom"
+          onClick={() => onChangeView("vet-panel")}
+        >
+          <h4>Panel Veterinario</h4>
+        </div>
+      )}
+
+      {isVet && (
+        <div
+          className="cursor-pointer border-bottom"
           onClick={() => onChangeView("medical-records")}
         >
           <h4>Historiales Clínicos</h4>

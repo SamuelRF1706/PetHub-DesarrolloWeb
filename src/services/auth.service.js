@@ -1,5 +1,9 @@
 import Swal from "sweetalert2";
 import axios from "axios";
+import bcrypt from "bcryptjs";
+// Nota: esta función usa un endpoint temporal que devuelve todos los usuarios.
+// Comparar contraseñas en el cliente es inseguro y debe reemplazarse por un endpoint
+// de autenticación seguro (POST /auth/login) en producción.
 
 const login = async (email, password) => {
   if (!email || !password) {
@@ -12,40 +16,45 @@ const login = async (email, password) => {
   }
 
   try {
-    const usuariosRef = collection(db, "users");
-    const q = query(usuariosRef, where("email", "==", email));
-    const querySnapshot = await getDocs(q);
-    const docSnap = querySnapshot.docs[0];
-    const user = docSnap?.data();
+    const apiUrl = "https://pethub-backend-rrpn.onrender.com/users/getAllUsers";
+    const res = await axios.get(apiUrl);
+    const users = Array.isArray(res.data) ? res.data : res.data?.users || [];
 
-    if (!user || user.password !== password) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Correo o contraseña incorrectos!",
-      });
+    const user = users.find((u) => (u.email || u.mail || u.username || u.emailAddress) === email);
+    if (!user) {
+      Swal.fire({ icon: "error", title: "Oops...", text: "Correo o contraseña incorrectos!" });
       return false;
     }
 
-    // 🔹 Guardamos todos los datos del usuario
-    localStorage.setItem("isAuthenticate", true);
-    localStorage.setItem("user_name", `${user.name} ${user.lastName}`);
-    localStorage.setItem("role", user.role);
-    localStorage.setItem("user_id", docSnap.id);
+    // comparar password con passwordHash usando bcryptjs
+    const hash = user.passwordHash || user.password || user.password_hash || user.pass;
+    const passwordMatches = hash ? bcrypt.compareSync(password, hash) : false;
+    if (!passwordMatches) {
+      Swal.fire({ icon: "error", title: "Oops...", text: "Correo o contraseña incorrectos!" });
+      return false;
+    }
 
-    // 🔹 Nuevas líneas para que AccountInfo muestre todo correctamente
-    localStorage.setItem("first_name", user.name || "");
-    localStorage.setItem("last_name", user.lastName || "");
-    localStorage.setItem("email", user.email || "");
+    // Guardar información en localStorage siguiendo la estructura del endpoint
+    localStorage.setItem("isAuthenticate", true);
+    localStorage.setItem("user_name", user.fullName || user.fullname || `${user.firstName || ''} ${user.lastName || ''}`.trim());
+    localStorage.setItem("role", user.role?.name || user.role || "USER");
+    localStorage.setItem("user_id", user.idUser || user.id || user._id || "");
+    // guardar campos individuales para AccountInfo
+    const full = user.fullName || user.fullname || user.fullname || "";
+    if (full) {
+      const parts = full.split(/\s+/);
+      localStorage.setItem("first_name", parts[0] || "");
+      localStorage.setItem("last_name", parts.slice(1).join(" ") || "");
+    } else {
+      localStorage.setItem("first_name", user.firstName || user.name || "");
+      localStorage.setItem("last_name", user.lastName || "");
+    }
+    localStorage.setItem("email", user.email || user.mail || "");
 
     return true;
   } catch (error) {
-    console.error(error);
-    Swal.fire({
-      icon: "error",
-      title: "Oops...",
-      text: "Hubo un error iniciando sesión, contacta al administrador!",
-    });
+    console.error("Error iniciando sesión via API:", error?.response?.data || error.message || error);
+    Swal.fire({ icon: "error", title: "Oops...", text: "Hubo un error iniciando sesión, contacta al administrador!" });
     return false;
   }
 };
@@ -98,6 +107,13 @@ const registerNewUser = async (user) => {
   }
 
   const { password2, ...newUser } = user;
+  // El backend espera fullName (N mayúscula) y roleId: 1
+  const first = (user.name || "").trim();
+  const last = (user.lastName || "").trim();
+  newUser.fullName = `${first} ${last}`.trim();
+  newUser.roleId = 1;
+  // Elimina fullname si existe por error
+  if (newUser.fullname) delete newUser.fullname;
 
   try {
     // Endpoint proporcionado por el usuario
@@ -105,6 +121,9 @@ const registerNewUser = async (user) => {
     const token = localStorage.getItem("auth_token") || localStorage.getItem("token") || "";
     const headers = { "Content-Type": "application/json" };
     if (token) headers.Authorization = `Bearer ${token}`;
+
+    // Log para depuración
+    console.debug('[registerNewUser] Payload enviado:', JSON.stringify(newUser));
 
     const res = await axios.post(apiUrl, newUser, { headers });
     Swal.fire({
