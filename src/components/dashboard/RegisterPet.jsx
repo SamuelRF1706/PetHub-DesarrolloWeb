@@ -4,9 +4,12 @@ import { createNewPet, uploadImage } from "../../services/pet.service";
 
 export const RegisterPet = ({back}) => {
 
+
     const [pet, setPet] = useState({});
     const [file, setFile] = useState(null);
 
+
+    
     const crearMascota = async (e) => {
         e.preventDefault();
         const formData = new FormData();
