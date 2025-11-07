@@ -1,104 +1,113 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { getAllPetsByUserId } from "../../services/pet.service";
 import { createAppointment } from "../../services/appointment.service";
 import Swal from "sweetalert2";
 
-const Appointment = ({ back }) => {
+export function Appointment({ back }) {
+  const [pets, setPets] = useState([]);
   const [formData, setFormData] = useState({
-    ownerName: "",
-    petName: "",
+    petId: "",
     service: "",
     date: "",
     time: "",
   });
-  const [loading, setLoading] = useState(false);
+  const [loadingPets, setLoadingPets] = useState(true);
+
+  useEffect(() => {
+    loadPets();
+  }, []);
+
+  const loadPets = async () => {
+    try {
+      const data = await getAllPetsByUserId();
+      setPets(data);
+      if (data.length > 0) setFormData({ ...formData, petId: data[0].id });
+    } catch (error) {
+      console.error("Error cargando mascotas:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudieron cargar las mascotas",
+        confirmButtonText: "Aceptar",
+      });
+    } finally {
+      setLoadingPets(false);
+    }
+  };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    if (!formData.petId || !formData.service || !formData.date || !formData.time) {
+      Swal.fire("Error", "Todos los campos son obligatorios", "error");
+      return;
+    }
     try {
       await createAppointment(formData);
-      Swal.fire({
-        icon: "success",
-        title: "¡Éxito!",
-        text: `Cita agendada para ${formData.petName} con ${formData.ownerName}`,
-        confirmButtonText: "Aceptar"
-      });
-      setFormData({
-        ownerName: "",
-        petName: "",
-        service: "",
-        date: "",
-        time: "",
-      });
+      Swal.fire("Éxito", "Cita agendada correctamente", "success");
       back();
     } catch (error) {
-      console.error("Error al agendar cita:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo agendar la cita. Por favor, intente nuevamente.",
-        confirmButtonText: "Aceptar"
-      });
-    } finally {
-      setLoading(false);
+      console.error("Error creando cita:", error);
+      Swal.fire("Error", error.message || "No se pudo crear la cita", "error");
     }
   };
 
+  if (loadingPets) {
+    return (
+      <div className="d-flex justify-content-center my-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (pets.length === 0) {
+    return (
+      <div className="text-center p-5 bg-white text-dark min-vh-50 rounded">
+        <p>No tienes mascotas registradas. Debes agregar al menos una para agendar una cita.</p>
+        <button className="btn btn-outline-dark" onClick={back}>
+          Volver
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="container mt-4">
-      <h2 className="text-center mb-4">Agendar Cita</h2>
-      <form
-        className="border rounded p-4 shadow-sm bg-light"
-        onSubmit={handleSubmit}
-      >
+    <div className="p-4 bg-white text-dark rounded shadow-sm min-vh-100">
+      <h3 className="mb-4">Agendar Cita</h3>
+      <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label className="form-label">Nombre del dueño</label>
-          <input
-            type="text"
-            className="form-control"
-            name="ownerName"
-            value={formData.ownerName}
+          <label className="form-label">Mascota</label>
+          <select
+            className="form-select"
+            name="petId"
+            value={formData.petId}
             onChange={handleChange}
-            required
-            placeholder="Ej: Juan Pérez"
-          />
+          >
+            {pets.map((pet) => (
+              <option key={pet.id} value={pet.id}>
+                {pet.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Nombre de la mascota</label>
-          <input
-            type="text"
-            className="form-control"
-            name="petName"
-            value={formData.petName}
-            onChange={handleChange}
-            required
-            placeholder="Ej: Firulais"
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Servicio</label>
+          <label className="form-label">Tipo de cita</label>
           <select
             className="form-select"
             name="service"
             value={formData.service}
             onChange={handleChange}
-            required
           >
-            <option value="">Seleccione un servicio</option>
-            <option value="consulta">Consulta General</option>
-            <option value="vacunacion">Vacunación</option>
-            <option value="desparasitacion">Desparasitación</option>
-            <option value="control">Control Médico</option>
+            <option value="">Selecciona</option>
+            <option value="Vacunación">Vacunación</option>
+            <option value="Consulta">Consulta</option>
+            <option value="Desparasitación">Desparasitación</option>
           </select>
         </div>
 
@@ -110,7 +119,6 @@ const Appointment = ({ back }) => {
             name="date"
             value={formData.date}
             onChange={handleChange}
-            required
           />
         </div>
 
@@ -122,36 +130,18 @@ const Appointment = ({ back }) => {
             name="time"
             value={formData.time}
             onChange={handleChange}
-            required
           />
         </div>
 
-        <button 
-          type="submit" 
-          className="btn btn-primary w-100 mb-2"
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-              Agendando...
-            </>
-          ) : (
-            "Agendar Cita"
-          )}
-        </button>
-
-        <button
-          type="button"
-          className="btn btn-secondary w-100"
-          onClick={back}
-          disabled={loading}
-        >
-          ← Regresar
-        </button>
+        <div className="d-flex justify-content-between">
+          <button type="button" className="btn btn-outline-dark" onClick={back}>
+            Cancelar
+          </button>
+          <button type="submit" className="btn btn-dark">
+            Agendar
+          </button>
+        </div>
       </form>
     </div>
   );
-};
-
-export default Appointment;
+}

@@ -1,102 +1,99 @@
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../components/utils/firebase";
+// src/services/appointment.service.js
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const createAppointment = async (appointment) => {
-    // Endpoint proporcionado por el usuario para crear citas
-    const apiUrl = "https://pethub-backend-rrpn.onrender.com/appointments/createAppointment";
-    try {
-        const token = localStorage.getItem("auth_token") || localStorage.getItem("token") || "";
-        const headers = { "Content-Type": "application/json" };
-        if (token) headers.Authorization = `Bearer ${token}`;
+const BASE_URL = "https://pethub-backend-rrpn.onrender.com/appointments";
 
-        // Construir el payload con los nombres exactos que espera el backend
-        // petId, ownerId, veterinarianId, appointmentDate, notes
-        let payload = {};
-        // petId: preferir el valor numérico, si no, intentar mapear por nombre
-        if (appointment.petId) {
-            payload.petId = Number(appointment.petId);
-        } else if (appointment.petName) {
-            try {
-                const { getAllPetsByUserId } = await import("./pet.service");
-                const pets = await getAllPetsByUserId();
-                const found = pets.find(p => (p.nombre || p.name || p.nombreMascota || p.petName) === appointment.petName);
-                if (found) payload.petId = Number(found.id || found._id || found.petId);
-            } catch (mapErr) {
-                console.warn('[createAppointment] no se pudo mapear petName a petId:', mapErr);
-            }
-        }
+// ✅ función auxiliar para obtener token y userId
+const getAuthData = () => {
+  const token =
+    localStorage.getItem("token") ||
+    localStorage.getItem("auth_token") ||
+    localStorage.getItem("access_token");
+  const userId =
+    localStorage.getItem("userId") || localStorage.getItem("user_id");
 
-        // ownerId: preferir el valor numérico, si no, tomar de localStorage
-        if (appointment.ownerId) {
-            payload.ownerId = Number(appointment.ownerId);
-        } else {
-            const ownerId = localStorage.getItem("user_id");
-            if (ownerId) payload.ownerId = Number(ownerId);
-        }
+  if (!token || !userId) {
+    console.warn("Usuario no autenticado");
+    return null; // ⚠️ no lanzamos error
+  }
 
-        // veterinarianId: si viene del form, usarlo; si no, dejarlo vacío o null
-        if (appointment.veterinarianId) {
-            payload.veterinarianId = Number(appointment.veterinarianId);
-        }
-
-        // appointmentDate: debe ser string ISO (ya lo es en el JSON de prueba)
-        if (appointment.appointmentDate) {
-            payload.appointmentDate = appointment.appointmentDate;
-        } else if (appointment.date) {
-            // Si el form usa "date" y "time" separados
-            if (appointment.time) {
-                // Unir date y time en formato ISO
-                payload.appointmentDate = new Date(`${appointment.date}T${appointment.time}`).toISOString();
-            } else {
-                payload.appointmentDate = new Date(appointment.date).toISOString();
-            }
-        }
-
-        // notes: opcional
-        if (appointment.notes) {
-            payload.notes = appointment.notes;
-        } else if (appointment.descripcion) {
-            payload.notes = appointment.descripcion;
-        }
-
-        // Log para depuración
-        console.debug('[createAppointment] Payload enviado:', JSON.stringify(payload));
-
-        const res = await axios.post(apiUrl, payload, { headers });
-        return res.data;
-    } catch (error) {
-        console.error("Error creating appointment via API:", error?.response?.data || error.message || error);
-        Swal.fire({
-            icon: "error",
-            title: "Error al crear cita",
-            text: error?.response?.data?.message || "No se pudo crear la cita. Revisa la consola para más detalles.",
-            confirmButtonText: "Aceptar",
-        });
-        throw error;
-    }
+  return { token, userId };
 };
 
-const getAllAppointmentsByUserId = async () => {
-    const user_id = localStorage.getItem("user_id");
-    const appointmentsRef = collection(db, "users", user_id, "appointments");
-    const querySnapshot = await getDocs(appointmentsRef);
-    const appointmentsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    return appointmentsData;
+// ✅ Crear una cita
+export const createAppointment = async (appointment) => {
+  try {
+    const authData = getAuthData();
+    if (!authData) throw new Error("Usuario no autenticado");
+
+    const { token, userId } = authData;
+
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+
+    const payload = {
+      petId: Number(appointment.petId),
+      ownerId: Number(userId),
+      veterinarianId: appointment.veterinarianId || 1, // Ajustar según backend
+      appointmentDate: new Date(
+        `${appointment.date}T${appointment.time}`
+      ).toISOString(),
+      notes: appointment.notes || "Sin notas adicionales",
+    };
+
+    console.log("[createAppointment] payload:", payload);
+
+    const response = await axios.post(
+      `${BASE_URL}/createAppointment`,
+      payload,
+      { headers }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error creando cita:", error);
+
+    Swal.fire({
+      icon: "error",
+      title: "Error al crear la cita",
+      text:
+        error?.response?.data?.message ||
+        error.message ||
+        "No se pudo crear la cita. Intenta nuevamente.",
+      confirmButtonText: "Aceptar",
+    });
+
+    throw error;
+  }
 };
 
-const getAppointmentsByDate = async (date) => {
-    const user_id = localStorage.getItem("user_id");
-    const appointmentsRef = collection(db, "users", user_id, "appointments");
-    const q = query(appointmentsRef, where("date", "==", date));
-    const querySnapshot = await getDocs(q);
-    const appointmentsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    return appointmentsData;
-};
+// ✅ Obtener todas las citas del usuario autenticado
+export const getAllAppointmentsByUserId = async () => {
+  const authData = getAuthData();
+  if (!authData) return []; // ⚠️ Devuelve array vacío si no hay token
 
-export {
-    createAppointment,
-    getAllAppointmentsByUserId,
-    getAppointmentsByDate
+  try {
+    const { token, userId } = authData;
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    const response = await axios.get(
+      `${BASE_URL}/getAllAppointmentsByUserId/${userId}`,
+      { headers }
+    );
+
+    console.log("[getAllAppointmentsByUserId] Data:", response.data);
+
+    return Array.isArray(response.data)
+      ? response.data
+      : response.data.appointments || [];
+  } catch (error) {
+    console.error("Error al obtener citas:", error);
+    return []; // ⚠️ Devuelve array vacío en caso de error
+  }
 };
