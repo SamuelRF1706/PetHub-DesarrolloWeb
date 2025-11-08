@@ -11,3 +11,23 @@
 .verdequeQuiero{
   background-color: rgb(121, 234, 127);
 }
+
+/* Tema global: fondo blanco y texto centrado */
+body {
+  background-color: #ffffff;
+  color: #111111;
+  text-align: center;
+  min-height: 100vh;
+}
+
+/* Asegurar que clases que estaban forzando texto claro se adapten al nuevo fondo */
+.text-light {
+  color: inherit !important;
+}
+
+/* Opcional: convertir barras oscuras a fondo blanco para mantener consistencia */
+.bg-dark {
+  background-color: #ffffff !important;
+  color: inherit !important;
+  border-right: 1px solid #e6e6e6;
+}

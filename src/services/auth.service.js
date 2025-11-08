@@ -37,7 +37,8 @@ const login = async (email, password) => {
     // Guardar información en localStorage siguiendo la estructura del endpoint
     localStorage.setItem("isAuthenticate", true);
     localStorage.setItem("user_name", user.fullName || user.fullname || `${user.firstName || ''} ${user.lastName || ''}`.trim());
-    localStorage.setItem("role", user.role?.name || user.role || "USER");
+    // Guardar el id del rol (2 = VET)
+    localStorage.setItem("role", user.role?.idRole || user.roleId || "1");
     localStorage.setItem("user_id", user.idUser || user.id || user._id || "");
     // guardar campos individuales para AccountInfo
     const full = user.fullName || user.fullname || user.fullname || "";

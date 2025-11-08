@@ -91,18 +91,21 @@ export const AccountInfo = ({ back }) => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="text-light p-3">
-      <h2>Información de la cuenta</h2>
-      <p><strong>Nombre:</strong> {userData.name}</p>
-      <p><strong>Apellido:</strong> {userData.lastName}</p>
-      <p><strong>Correo electrónico:</strong> {userData.email}</p>
-      <p><strong>Rol:</strong> {userData.role}</p>
-
+    <div className="bg-light text-dark pt-3 ps-5 pe-5 overflow-auto h-100">
+        <div className="text-center mb-4">
+              <h2>Información de la cuenta</h2>
+              <p><strong>Nombre:</strong> {userData.name}</p>
+              <p><strong>Apellido:</strong> {userData.lastName}</p>
+              <p><strong>Correo electrónico:</strong> {userData.email}</p>
+              <p><strong>Rol:</strong> {userData.role}</p>
+         
       {back && (
         <button className="btn btn-secondary mt-3" onClick={back}>
           Regresar
         </button>
+        
       )}
+      </div>
     </div>
   );
 };

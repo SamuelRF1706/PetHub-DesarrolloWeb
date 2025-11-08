@@ -4,24 +4,36 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const createNewPet = async (pet) => {
-    // Endpoint proporcionado por el usuario
-    const apiUrl = "https://pethub-backend-rrpn.onrender.com/pets/createPet";
     try {
-        const token = localStorage.getItem("auth_token") || localStorage.getItem("token") || "";
-        const headers = { "Content-Type": "application/json" };
-        if (token) headers.Authorization = `Bearer ${token}`;
-
-        const res = await axios.post(apiUrl, pet, { headers });
-        // "Quemar" token en el cliente: eliminarlo de localStorage después de usarlo
-        try {
-            if (token) {
-                localStorage.removeItem("auth_token");
-                localStorage.removeItem("token");
-                console.debug('[createNewPet] token removed from localStorage');
-            }
-        } catch (rmErr) {
-            console.warn('[createNewPet] failed to remove token:', rmErr);
+        // Login como admin para obtener token
+        const loginRes = await axios.post("https://pethub-backend-rrpn.onrender.com/users/login", {
+            username: "admin",
+            password: "admin123"
+        });
+        const token = loginRes?.data?.token;
+        if (!token) {
+            throw new Error("No se pudo obtener token de admin");
         }
+
+        const apiUrl = "https://pethub-backend-rrpn.onrender.com/pets/createPet";
+        const headers = { "Content-Type": "application/json" };
+        headers.Authorization = `Bearer ${token}`;
+
+        // Construir payload con los nombres que el backend espera
+        const ownerFromStorage = localStorage.getItem("user_id");
+        const payload = {
+            ownerId: ownerFromStorage ? Number(ownerFromStorage) : (pet.ownerId ? Number(pet.ownerId) : undefined),
+            name: pet.name || pet.nombre || pet.petName || "",
+            species: pet.species || pet.especie || pet.type || "",
+            breed: pet.breed || pet.raza || "",
+            birthDate: pet.birthDate || pet.birth_date || pet.fechaNacimiento || null,
+        };
+
+        // Log para depuración
+        console.debug('[createNewPet] Payload enviado:', JSON.stringify(payload));
+        console.debug('[createNewPet] Token usado:', token);
+
+        const res = await axios.post(apiUrl, payload, { headers });
         return res.data;
     } catch (error) {
         console.error("Error creating pet via API:", error?.response?.data || error.message || error);
@@ -35,7 +47,7 @@ const createNewPet = async (pet) => {
     }
 };
 
-const uploadImage = async (formData) => {
+ /*const uploadImage = async (formData) => {
     const upload_preset= import.meta.env.VITE_UPLOAD_PRESET_NAME;
     const cloud_name= import.meta.env.VITE_CLOUD_NAME;
     const apiUrl = `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`;
@@ -52,19 +64,48 @@ const uploadImage = async (formData) => {
             confirmButtonText: "Aceptar",
         });
     }
-}
+} */
 
 const getAllPetsByUserId = async () => {
     const user_id = localStorage.getItem("user_id");
-    const petsRef = collection(db, "users", user_id, "pets");
-    const querySnapshot = await getDocs(petsRef);
-    const petsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    return petsData;
+    try {
+        // Login como admin para obtener token
+        const loginRes = await axios.post("https://pethub-backend-rrpn.onrender.com/users/login", {
+            username: "admin",
+            password: "admin123",
+            "Content-Type": "application/json"
+        });
+        const token = loginRes?.data?.token;
+        console.debug('[getAllPetsByUserId] Token obtenido:', token);
+        if (!token) {
+            console.warn('[getAllPetsByUserId] no se obtuvo token del admin');
+            return [];
+        }
+
+        const allPetsRes = await axios.get("https://pethub-backend-rrpn.onrender.com/pets/getAllPets", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const allPets = Array.isArray(allPetsRes.data) ? allPetsRes.data : allPetsRes.data?.pets || [];
+        const myPets = allPets.filter((pet) => {
+            // owner may be object with idUser
+            const ownerId = pet.owner?.idUser || pet.owner?.id || pet.ownerId;
+            return String(ownerId) === String(user_id);
+        });
+        return myPets;
+
+    } catch (error) {
+        console.error('[getAllPetsByUserId] error:', error?.response?.data || error.message || error);
+        // Fallback: si falla, devolver array vacío
+        return [];
+    }
 }
 
 
 export { 
     createNewPet,
-    uploadImage,
     getAllPetsByUserId
 };

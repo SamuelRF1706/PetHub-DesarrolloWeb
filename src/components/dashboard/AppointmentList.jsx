@@ -47,12 +47,16 @@ export const AppointmentList = () => {
     }
 
     return (
-        <div className="container mt-4">
+        <div className="bg-light text-dark pt-3 ps-5 pe-5 overflow-auto h-100">
             <h2 className="text-center mb-4">Citas Agendadas</h2>
+
+           
             {appointments.length === 0 ? (
                 <div className="text-center">
                     <p>No hay citas agendadas</p>
                 </div>
+
+
             ) : (
                 <div className="row">
                     {appointments.map((appointment) => (
@@ -87,6 +91,7 @@ export const AppointmentList = () => {
                     ))}
                 </div>
             )}
+             
         </div>
     );
 };

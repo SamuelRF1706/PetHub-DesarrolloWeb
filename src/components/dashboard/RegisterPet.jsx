@@ -1,37 +1,32 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { createNewPet, uploadImage } from "../../services/pet.service";
+import { createNewPet } from "../../services/pet.service";
 
 export const RegisterPet = ({back}) => {
 
-    const [pet, setPet] = useState({});
-    const [file, setFile] = useState(null);
+  const [pet, setPet] = useState({});
 
-    const crearMascota = async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        try {
-            const url = await uploadImage(formData);
-            await createNewPet({...pet, image: url });
+  const crearMascota = async (e) => {
+    e.preventDefault();
+    try {
+      await createNewPet(pet);
 
-            Swal.fire({
-                icon: "success",
-                text: "Mascota registrada",
-                title: "La mascota ha sido registrada exitosamente.",
-                confirmButtonText: "Aceptar",
-            });
-            setPet({});
-        } catch (error) {
-            Swal.fire({
-                icon: "error",
-                text: "Error al registrar mascota",
-                title: "Hubo un error registrando la mascota, contacta el administrador!",
-                confirmButtonText: "Aceptar",
-            });
-        }
-    };
+      Swal.fire({
+        icon: "success",
+        text: "Mascota registrada",
+        title: "La mascota ha sido registrada exitosamente.",
+        confirmButtonText: "Aceptar",
+      });
+      setPet({});
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "Error al registrar mascota",
+        title: "Hubo un error registrando la mascota, contacta el administrador!",
+        confirmButtonText: "Aceptar",
+      });
+    }
+  };
 
 
   return (
@@ -78,14 +73,7 @@ export const RegisterPet = ({back}) => {
           />
         </div>
 
-        <div className="mb-3">
-          <label className="form-label">Imagen de la mascota</label>
-          <input
-            type="file"
-            className="form-control"
-            onInput={(e)=>setFile(e.target.files[0])}
-          />
-        </div>
+        {/* Campo de imagen eliminado por petición del equipo */}
 
         <div className="d-grid">
           <button type="submit" className="btn btn-dark">Registrar mascota</button>

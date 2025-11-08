@@ -42,12 +42,14 @@ export const PetsContainer = () => {
             Agregar mascota
           </button>
 
-          <button
-            className="btn btn-outline-dark"
-            onClick={() => setNewAppointmentFlag(true)}
-          >
-            Agendar cita
-          </button>
+           <button
+                        className="btn btn-outline-dark"
+                        onClick={() => setNewAppointmentFlag(true)}
+                      >
+                        Agendar cita
+                      </button>
+
+         
 
           <div className="row mt-3">
             {pets.length > 0 ? (
