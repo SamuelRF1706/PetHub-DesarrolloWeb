@@ -61,11 +61,6 @@ export const AppointmentList = () => {
 
   if (loading) {
     return (
-<<<<<<< HEAD
-      <div className="d-flex justify-content-center align-items-center h-100">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando...</span>
-=======
         <div className="bg-light text-dark pt-3 ps-5 pe-5 overflow-auto h-100">
             <h2 className="text-center mb-4">Citas Agendadas</h2>
 
@@ -111,9 +106,8 @@ export const AppointmentList = () => {
                 </div>
             )}
              
->>>>>>> new_dev
         </div>
-      </div>
+   
     );
   }
 

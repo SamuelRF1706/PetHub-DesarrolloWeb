@@ -4,29 +4,12 @@ import { createNewPet } from "../../services/pet.service";
 
 export const RegisterPet = ({back}) => {
 
-<<<<<<< HEAD
-
-    const [pet, setPet] = useState({});
-    const [file, setFile] = useState(null);
-
-
-    
-    const crearMascota = async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        try {
-            const url = await uploadImage(formData);
-            await createNewPet({...pet, image: url });
-=======
   const [pet, setPet] = useState({});
 
   const crearMascota = async (e) => {
     e.preventDefault();
     try {
       await createNewPet(pet);
->>>>>>> new_dev
 
       Swal.fire({
         icon: "success",

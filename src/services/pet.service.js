@@ -68,23 +68,6 @@ const createNewPet = async (pet) => {
 
 const getAllPetsByUserId = async () => {
     const user_id = localStorage.getItem("user_id");
-<<<<<<< HEAD
-    const dataUserAdmin = await axios.post("https://pethub-backend-rrpn.onrender.com/users/login", {
-        username: "admin",
-        password: "admin123"
-    });
-
-    const token = dataUserAdmin.data.token;
-
-    const allPets = await axios.get(`https://pethub-backend-rrpn.onrender.com/pets/getAllPets`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        }
-    });
-    const myPets = allPets.data.filter((pet)=>pet.owner.idUser == user_id);
-    return myPets;
-=======
     try {
         // Login como admin para obtener token
         const loginRes = await axios.post("https://pethub-backend-rrpn.onrender.com/users/login", {
@@ -119,7 +102,6 @@ const getAllPetsByUserId = async () => {
         // Fallback: si falla, devolver array vacío
         return [];
     }
->>>>>>> new_dev
 }
 
 
