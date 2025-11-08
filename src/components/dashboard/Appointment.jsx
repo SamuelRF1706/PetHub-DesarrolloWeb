@@ -79,8 +79,8 @@ export function Appointment({ back }) {
   }
 
   return (
-    <div className="p-4 bg-white text-dark rounded shadow-sm min-vh-100">
-      <h3 className="mb-4">Agendar Cita</h3>
+    <div className="p-4 bg-white text-dark rounded shadow-sm min-vh-100 form-container fade-in-up">
+      <h3 className="form-title mb-4">Agendar Cita</h3>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label">Mascota</label>
@@ -135,11 +135,11 @@ export function Appointment({ back }) {
           />
         </div>
 
-        <div className="d-flex justify-content-between">
-          <button type="button" className="btn btn-outline-dark" onClick={back}>
+        <div className="d-flex justify-content-between mt-4">
+          <button type="button" className="btn btn-outline-dark action-button" onClick={back}>
             Cancelar
           </button>
-          <button type="submit" className="btn btn-dark">
+          <button type="submit" className="btn btn-dark action-button">
             Agendar
           </button>
         </div>

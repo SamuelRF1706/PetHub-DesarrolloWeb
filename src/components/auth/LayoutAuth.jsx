@@ -14,11 +14,11 @@ export const LayoutAuth = ({login}) => {
 
     return (
         <div className="container d-flex justify-content-center align-items-center h-100">
-            <div className="row bg-light rounded-3 shadow-lg g-0">
+            <div className="row bg-light rounded-3 shadow-lg g-0 auth-container">
                 <div className="col-6">
-                    <img src={logo} alt="" className="h-100 w-100 rounded-start" />
+                    <img src={logo} alt="" className="h-100 w-100 rounded-start auth-image" />
                 </div>
-                <div className="col-6">
+                <div className="col-6 auth-form-container">
                     {
                         !isRegister ? <Login goToRegister={handleChange} login={login} />:<Register goToLogin={handleChange} />
                     }

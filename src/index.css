@@ -14,10 +14,11 @@
 
 /* Tema global: fondo blanco y texto centrado */
 body {
-  background-color: #ffffff;
+  background-color: #f8f9fa;
   color: #111111;
   text-align: center;
   min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 /* Asegurar que clases que estaban forzando texto claro se adapten al nuevo fondo */
@@ -30,4 +31,167 @@ body {
   background-color: #ffffff !important;
   color: inherit !important;
   border-right: 1px solid #e6e6e6;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Mejoras generales para cards */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.card-img-top {
+  border-radius: 12px 12px 0 0;
+}
+
+/* Mejoras para botones */
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+}
+
+.btn-outline-primary {
+  border: 2px solid #667eea;
+  color: #667eea;
+}
+
+.btn-outline-primary:hover {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+.btn-outline-dark {
+  border: 2px solid #343a40;
+}
+
+.btn-outline-dark:hover {
+  background: #343a40;
+  border-color: #343a40;
+}
+
+.btn-outline-light {
+  border: 2px solid #ffffff;
+}
+
+.btn-outline-light:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #ffffff;
+}
+
+/* Mejoras para formularios */
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  padding: 10px 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.form-label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 8px;
+}
+
+/* Mejoras para badges */
+.badge {
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Sombras personalizadas */
+.shadow-sm {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.shadow {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.shadow-lg {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Mejoras para el navbar */
+.navbar-custom {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Mejoras para contenedores */
+.container-fluid {
+  padding: 20px;
+}
+
+/* Mejoras para el menú lateral */
+.menu-custom {
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+/* Mejoras para enlaces */
+.text-primary {
+  color: #667eea !important;
+}
+
+.text-decoration-underline {
+  text-decoration: underline !important;
+}
+
+.text-decoration-underline:hover {
+  text-decoration: none !important;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+/* Animaciones básicas de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
 }

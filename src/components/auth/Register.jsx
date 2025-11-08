@@ -43,7 +43,7 @@ export const Register = ({goToLogin}) => {
 	}
     return (
 		<div className="d-flex flex-column justify-content-center align-items-center h-100 p-0">
-			<h4>PETHUB</h4>
+			<h4 className="auth-title mb-4">PETHUB</h4>
 			<div className="row w-100">
 				<div className="mb-3">
 					<label className="form-label">Nombres</label>
@@ -96,9 +96,9 @@ export const Register = ({goToLogin}) => {
 						onChange={(e) => setUser({ ...user, password2: e.target.value })}
 					/>
             	</div>
-				<div className='d-flex flex-column justify-content-center'>
+				<div className='d-flex flex-column justify-content-center gap-3'>
 					<button 
-						className='btn btn-primary' 
+						className='btn btn-primary btn-lg' 
 						onClick={createUser}
 						disabled={loading}
 					>

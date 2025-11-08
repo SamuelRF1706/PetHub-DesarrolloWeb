@@ -12,8 +12,8 @@ export const LayoutDasboard = ({ logout }) => {
       <div className="flex-grow-1">
         <div className="row g-0 h-100">
           <div className="col-2">
-            {/* ✅ ahora sí paso setView */}
-            <Menu onChangeView={setView} />
+            {/* ✅ ahora sí paso setView y la vista actual */}
+            <Menu onChangeView={setView} currentView={view} />
           </div>
           <div className="col-10 h-100">
             {/* ✅ y paso el estado al dashboard */}

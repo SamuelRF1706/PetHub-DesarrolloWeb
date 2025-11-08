@@ -156,8 +156,8 @@ export const VetAppointments = () => {
     }
 
     return (
-        <div className="container mt-4">
-            <h2 className="text-center mb-4">Gestión de Citas</h2>
+        <div className="container mt-4 appointments-container fade-in">
+            <h2 className="section-title text-center">Gestión de Citas</h2>
             
             <div className="mb-4">
                 <div className="btn-group" role="group">
@@ -188,10 +188,10 @@ export const VetAppointments = () => {
                 </div>
             ) : (
                 <div className="row">
-                    {filteredAppointments.map((appointment) => (
-                        <div key={appointment.id} className="col-md-6 col-lg-4 mb-4">
-                            <div className="card h-100 shadow-sm">
-                                <div className="card-body">
+                    {filteredAppointments.map((appointment, index) => (
+                        <div key={appointment.id} className="col-md-6 col-lg-4 mb-4 fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                            <div className="card h-100 shadow-sm appointment-card">
+                                <div className="card-body appointment-card-body">
                                     <h5 className="card-title">{appointment.service}</h5>
                                     <h6 className="card-subtitle mb-2 text-muted">
                                         Mascota: {appointment.petName}
