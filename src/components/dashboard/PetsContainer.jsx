@@ -36,6 +36,18 @@ export const PetsContainer = () => {
             Agregar mascota
           </button>
 
+<<<<<<< HEAD
+=======
+           <button
+                        className="btn btn-outline-dark"
+                        onClick={() => setNewAppointmentFlag(true)}
+                      >
+                        Agendar cita
+                      </button>
+
+         
+
+>>>>>>> new_dev
           <div className="row mt-3">
             {pets.length > 0 ? (
               pets.map((pet) => <CardPet pet={pet} key={pet.idPet} />)

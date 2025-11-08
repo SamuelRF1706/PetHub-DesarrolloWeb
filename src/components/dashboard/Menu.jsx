@@ -1,6 +1,6 @@
 export const Menu = ({ onChangeView }) => {
-  const role = localStorage.getItem("role");
-  const isVet = role === "VET";
+  const roleId = Number(localStorage.getItem("role") || "1");
+  const isVet = roleId === 2; // id 2 = VET
 
   return (
     <div className="d-flex flex-column p-3 gap-3 h-100 bg-dark text-light">
