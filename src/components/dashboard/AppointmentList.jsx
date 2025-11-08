@@ -114,11 +114,11 @@ export const AppointmentList = () => {
   if (newAppointmentFlag) return <Appointment back={back} />;
 
   return (
-    <div className="container-fluid bg-white text-dark h-100 p-4">
-      <h2 className="text-center mb-4">Citas Agendadas</h2>
+    <div className="container-fluid bg-white text-dark h-100 p-4 appointments-container fade-in">
+      <h2 className="section-title text-center">Citas Agendadas</h2>
 
-      <div className="text-end mb-3">
-        <button className="btn btn-outline-dark" onClick={() => setNewAppointmentFlag(true)}>
+      <div className="text-end mb-4">
+        <button className="btn btn-outline-dark action-button" onClick={() => setNewAppointmentFlag(true)}>
           Agendar cita
         </button>
       </div>
@@ -127,10 +127,10 @@ export const AppointmentList = () => {
         <div className="text-center"><p>No hay citas agendadas</p></div>
       ) : (
         <div className="row">
-          {appointments.map((appointment) => (
-            <div key={appointment.id} className="col-md-6 col-lg-4 mb-4">
-              <div className="card h-100 shadow-sm">
-                <div className="card-body">
+          {appointments.map((appointment, index) => (
+            <div key={appointment.id} className="col-md-6 col-lg-4 mb-4 fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+              <div className="card h-100 shadow-sm appointment-card">
+                <div className="card-body appointment-card-body">
                   <h5 className="card-title">{appointment.service}</h5>
                   <h6 className="card-subtitle mb-2 text-muted">
                     Mascota: {appointment.petName}
@@ -140,8 +140,8 @@ export const AppointmentList = () => {
                        <strong>Veterinario:</strong> {appointment.veterinarianName}<br/>
                     <strong>Hora:</strong> {appointment.time}<br/>
                   </p>
-                  <div className="d-flex justify-content-end">
-                    <span className={`badge bg-${new Date(appointment.date) > new Date() ? "primary" : "secondary"}`}>
+                  <div className="d-flex justify-content-end mt-3">
+                    <span className={`badge status-badge bg-${new Date(appointment.date) > new Date() ? "primary" : "secondary"}`}>
                       {new Date(appointment.date) > new Date() ? "Próxima" : "Pasada"}
                     </span>
                   </div>

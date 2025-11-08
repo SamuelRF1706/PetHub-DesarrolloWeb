@@ -22,14 +22,15 @@ export const PetsContainer = () => {
   };
 
   return (
-    <div className="bg-light text-dark pt-3 ps-5 pe-5 overflow-auto h-100">
-      {!newPetFlag && <h1>Mis mascotas</h1>}
+    <div className="bg-light text-dark pt-3 ps-5 pe-5 overflow-auto h-100 pets-container fade-in">
+      {!newPetFlag && <h1 className="section-title">Mis mascotas</h1>}
 
       {newPetFlag ? (
         <RegisterPet back={back} />
       ) : (
         <div>
-          <button className="btn btn-outline-dark me-2"
+          <button
+            className="btn btn-outline-dark me-2 action-button"
             onClick={() => setNewPetFlag(true)}
           >
             Agregar mascota

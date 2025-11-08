@@ -9,9 +9,9 @@ export const Login = ({goToRegister, login}) => {
 
 	return (
 		<div className="d-flex flex-column justify-content-center align-items-center h-100 p-0">
-			<h4>PETHUB</h4>
+			<h4 className="auth-title mb-4">PETHUB</h4>
 			<div className="row w-100">
-				<div className='mb-3'>
+				<div className='mb-4'>
 					<label htmlFor="email" className="form-label">Email:</label>
 					<input
 						type="email"
@@ -22,7 +22,7 @@ export const Login = ({goToRegister, login}) => {
 						onChange={(e) => setUser((user) => ({...user, email: e.target.value }))}
 					/>
 				</div>
-				<div className='mb-5'>
+				<div className='mb-4'>
 					<label htmlFor="password" className="form-label">Contraseña:</label>
 					<input
 						type="password"
@@ -32,10 +32,10 @@ export const Login = ({goToRegister, login}) => {
 						value={user.password}
 						onChange={(e) => setUser((user) => ({...user, password: e.target.value }))}
 					/>
-					<span className='text-primary text-decoration-underline cursor-pointer'>Olvide mi contraseña</span>
+					<span className='text-primary text-decoration-underline cursor-pointer mt-2 d-block'>Olvide mi contraseña</span>
 				</div>
-				<div className='d-flex flex-column justify-content-center'>
-					<button type='button' className='btn btn-primary' onClick={()=>login(user)}>Iniciar sesion</button>
+				<div className='d-flex flex-column justify-content-center gap-3'>
+					<button type='button' className='btn btn-primary btn-lg' onClick={()=>login(user)}>Iniciar sesión</button>
 					<span className='text-primary text-decoration-underline cursor-pointer' onClick={goToRegister}>Aun no tengo cuenta</span>
 				</div>
 			</div>

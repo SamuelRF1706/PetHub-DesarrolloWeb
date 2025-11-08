@@ -23,7 +23,7 @@ function App() {
     }
 
     return (
-        <div className="bg-dark vh-100 d-flex flex-column">
+        <div className="bg-light vh-100 d-flex flex-column">
             {
                 !isLogin ? <LayoutAuth login={handleLogin} /> : <LayoutDasboard logout={handleLogout}/>
             }

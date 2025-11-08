@@ -92,18 +92,31 @@ export const AccountInfo = ({ back }) => {
 
   return (
     <div className="bg-light text-dark pt-3 ps-5 pe-5 overflow-auto h-100">
-        <div className="text-center mb-4">
-              <h2>Información de la cuenta</h2>
-              <p><strong>Nombre:</strong> {userData.name}</p>
-              <p><strong>Apellido:</strong> {userData.lastName}</p>
-              <p><strong>Correo electrónico:</strong> {userData.email}</p>
-              <p><strong>Rol:</strong> {userData.role}</p>
+        <div className="account-info-container fade-in-up">
+              <h2 className="section-title text-center">Información de la cuenta</h2>
+              <div className="account-info-item">
+                <span className="account-info-label">Nombre:</span>
+                <span className="account-info-value">{userData.name}</span>
+              </div>
+              <div className="account-info-item">
+                <span className="account-info-label">Apellido:</span>
+                <span className="account-info-value">{userData.lastName}</span>
+              </div>
+              <div className="account-info-item">
+                <span className="account-info-label">Correo electrónico:</span>
+                <span className="account-info-value">{userData.email}</span>
+              </div>
+              <div className="account-info-item">
+                <span className="account-info-label">Rol:</span>
+                <span className="account-info-value">{userData.role}</span>
+              </div>
          
       {back && (
-        <button className="btn btn-secondary mt-3" onClick={back}>
-          Regresar
-        </button>
-        
+        <div className="text-center mt-4">
+          <button className="btn btn-secondary action-button" onClick={back}>
+            Regresar
+          </button>
+        </div>
       )}
       </div>
     </div>

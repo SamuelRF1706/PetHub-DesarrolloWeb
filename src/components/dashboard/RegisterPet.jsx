@@ -30,12 +30,13 @@ export const RegisterPet = ({back}) => {
 
 
   return (
-    <div className="col-md-6 mx-auto my-5">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="">Registrar Mascota</h4>
-        <span className="text-primary text-decoration-underline cursor-pointer" onClick={back}>Volver</span>
-      </div>
-      <form onSubmit={crearMascota}>
+    <div className="col-md-8 mx-auto my-5">
+      <div className="form-container fade-in-up">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h4 className="form-title">Registrar Mascota</h4>
+          <span className="text-primary text-decoration-underline cursor-pointer" onClick={back}>Volver</span>
+        </div>
+        <form onSubmit={crearMascota}>
         <div className="mb-3">
           <label className="form-label">Nombre mascota</label>
           <input
@@ -75,10 +76,11 @@ export const RegisterPet = ({back}) => {
 
         {/* Campo de imagen eliminado por petición del equipo */}
 
-        <div className="d-grid">
-          <button type="submit" className="btn btn-dark">Registrar mascota</button>
+        <div className="d-grid mt-4">
+          <button type="submit" className="btn btn-dark btn-lg action-button">Registrar mascota</button>
         </div>
       </form>
+      </div>
     </div>
   )
 }
