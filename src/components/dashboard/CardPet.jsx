@@ -8,10 +8,10 @@ export const CardPet = ({pet}) => {
                 <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center">
                         <div>
-                            <h5 className="card-title">{pet.nombre}</h5>
+                            <h5 className="card-title">{pet.name}</h5>
                             <div className="card-text">
-                                <strong>Especie:</strong> {pet.especie} <br />
-                                <strong>Raza:</strong> {pet.raza} <br />
+                                <strong>Especie:</strong> {pet.species} <br />
+                                <strong>Raza:</strong> {pet.breed} <br />
                                 <strong>Edad:</strong> {pet.edad} años
                             </div>
                         </div>
