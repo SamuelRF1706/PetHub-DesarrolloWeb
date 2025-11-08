@@ -122,7 +122,7 @@ export const AppointmentList = () => {
           Agendar cita
         </button>
       </div>
-      {console.log(appointments)}
+     
       {appointments.length === 0 ? (
         <div className="text-center"><p>No hay citas agendadas</p></div>
       ) : (
@@ -137,6 +137,7 @@ export const AppointmentList = () => {
                   </h6>
                   <p className="card-text">
                     <strong>Fecha:</strong> {formatDate(appointment.date)}<br/>
+                       <strong>Veterinario:</strong> {appointment.veterinarianName}<br/>
                     <strong>Hora:</strong> {appointment.time}<br/>
                   </p>
                   <div className="d-flex justify-content-end">

@@ -145,4 +145,15 @@ const registerNewUser = async (user) => {
   }
 };
 
-export { login, logout, isAuthenticated, registerNewUser, checkEmailExists };
+const getAllUsers = async () => {
+  try {
+    const apiUrl = "https://pethub-backend-rrpn.onrender.com/users/getAllUsers";
+    const res = await axios.get(apiUrl);
+
+    return res.data;
+  } catch (error) {
+    console.log("Error obteniendo usuarios:", error);
+  }
+}
+
+export { login, logout, isAuthenticated, registerNewUser, checkEmailExists, getAllUsers };

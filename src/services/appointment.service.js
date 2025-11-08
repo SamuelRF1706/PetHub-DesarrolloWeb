@@ -2,6 +2,8 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 import { getAllPetsByUserId } from "./pet.service";
+import { getAllUsers } from "./auth.service";
+
 
 const BASE_URL = "https://pethub-backend-rrpn.onrender.com/appointments";
 
@@ -87,7 +89,7 @@ export const getAllAppointmentsByUserId = async () => {
     const headers = {
       Authorization: `Bearer ${token}`,
     };
-    console.log(authData)
+    
     // const response = await axios.get(
     //   `${BASE_URL}/getAllAppointmentsByUserId/${userId}`,
     //   { headers }
@@ -98,7 +100,9 @@ export const getAllAppointmentsByUserId = async () => {
     );
 
     const myPets = await getAllPetsByUserId();
-    console.log(myPets)
+    const users = await getAllUsers();
+
+
     return response.data.filter((appointment)=>{
 
       const date = new Date(appointment.appointmentDate);
@@ -108,6 +112,10 @@ export const getAllAppointmentsByUserId = async () => {
 
       const pet = myPets.find((pet)=> pet.idPet == appointment.petId);
       appointment.petName = pet ? pet.name : "Sin nombre";
+
+      const veterinan = users.find((user) => user.idUser == appointment.veterinarianId);
+      appointment.veterinarianName = veterinan ? veterinan.fullName : "Veterinario desconocido";
+      
       return appointment.ownerId == userId
     });
     
