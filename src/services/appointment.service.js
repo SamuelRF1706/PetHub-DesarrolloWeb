@@ -78,6 +78,46 @@ export const createAppointment = async (appointment) => {
   }
 };
 
+
+export const getAllAppointmentsByUserVeterinan = async () => {
+        const authData = await getAuthData();
+    if (!authData) return []; // ⚠️ Devuelve array vacío si no hay token
+    
+    try {
+        const { token, userId } = authData;
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    
+    // const response = await axios.get(
+    //   `${BASE_URL}/getAllAppointmentsByUserId/${userId}`,
+    //   { headers }
+    // );
+    const response = await axios.get(
+      `${BASE_URL}/getAllappointments`,
+      { headers }
+    );
+
+    const myPets = await getAllPetsByUserId();
+    const users = await getAllUsers();
+
+    return response.data.filter((appointment)=>{
+        const pet = myPets.find((pet)=> pet.idPet == appointment.petId);
+        appointment.petName = pet ? pet.name : "Sin nombre"; 
+        
+        const veterinan = users.find((user) => user.idUser == appointment.veterinarianId);
+        appointment.veterinarianName = veterinan ? veterinan.fullName : "Veterinario desconocido";
+        return appointment.veterinarianId == userId
+    })
+
+    } catch {
+        console.log("Error al obtener citas:", error);
+        return []; // ⚠️ Devuelve array vacío en caso de error
+    }
+
+    }
+
 // ✅ Obtener todas las citas del usuario autenticado
 export const getAllAppointmentsByUserId = async () => {
   const authData = await getAuthData();
@@ -123,4 +163,8 @@ export const getAllAppointmentsByUserId = async () => {
     console.error("Error al obtener citas:", error);
     return []; // ⚠️ Devuelve array vacío en caso de error
   }
+
+
+
+    
 };

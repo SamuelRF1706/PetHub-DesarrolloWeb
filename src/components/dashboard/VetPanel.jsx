@@ -43,19 +43,19 @@ export const VetPanel = () => {
         </div>
       ) : (
         <div className="row">
-          {appointments.map((a) => (
-            <div key={a.id} className="col-md-6 mb-3">
+          {appointments.map((appointment) => (
+            <div key={appointment.id} className="col-md-6 mb-3">
               <div className="card h-100">
                 <div className="card-body">
-                  <h5 className="card-title">{a.service || a.tipo || "Servicio"}</h5>
+                  <h5 className="card-title">{appointment.service || appointment.tipo || "Servicio"}</h5>
                   <p className="card-text">
-                    <strong>Mascota:</strong> {a.petName || a.pet || a.petName}
+                    <strong>Mascota:</strong> {appointment.petName || appointment.pet || appointment.petName}
                     <br />
-                    <strong>Dueño:</strong> {a.ownerName || a.owner}
+                    <strong>Dueño:</strong> {appointment.ownerName || appointment.owner}
                     <br />
-                    <strong>Fecha:</strong> {a.date}
+                    <strong>Fecha:</strong> {appointment.date}
                     <br />
-                    <strong>Hora:</strong> {a.time}
+                    <strong>Hora:</strong> {appointment.time}
                   </p>
 
                   <div className="d-flex gap-2">
