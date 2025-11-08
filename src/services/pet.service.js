@@ -56,10 +56,21 @@ const uploadImage = async (formData) => {
 
 const getAllPetsByUserId = async () => {
     const user_id = localStorage.getItem("user_id");
-    const petsRef = collection(db, "users", user_id, "pets");
-    const querySnapshot = await getDocs(petsRef);
-    const petsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    return petsData;
+    const dataUserAdmin = await axios.post("https://pethub-backend-rrpn.onrender.com/users/login", {
+        username: "admin",
+        password: "admin123"
+    });
+
+    const token = dataUserAdmin.data.token;
+
+    const allPets = await axios.get(`https://pethub-backend-rrpn.onrender.com/pets/getAllPets`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
+    });
+    const myPets = allPets.data.filter((pet)=>pet.owner.idUser == user_id);
+    return myPets;
 }
 
 

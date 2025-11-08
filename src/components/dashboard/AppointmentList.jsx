@@ -1,21 +1,25 @@
-// src/components/dashboard/AppointmentList.jsx
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { getAllAppointmentsByUserId } from "../../services/appointment.service";
-import { Appointment } from "./Appointment"; // formulario para crear cita
+import { Appointment } from "./Appointment";
 
 export const AppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newAppointmentFlag, setNewAppointmentFlag] = useState(false);
 
+  const userId = localStorage.getItem("user_id");
+
   useEffect(() => {
     loadAppointments();
   }, []);
 
   const loadAppointments = async () => {
+    setLoading(true);
     try {
-      const data = await getAllAppointmentsByUserId();
+      if (!userId) throw new Error("Usuario no autenticado");
+
+      const data = await getAllAppointmentsByUserId(userId);
       setAppointments(data);
 
       if (!data || data.length === 0) {
@@ -65,27 +69,20 @@ export const AppointmentList = () => {
     );
   }
 
-  if (newAppointmentFlag) {
-    return <Appointment back={back} />;
-  }
+  if (newAppointmentFlag) return <Appointment back={back} />;
 
   return (
     <div className="container-fluid bg-white text-dark h-100 p-4">
       <h2 className="text-center mb-4">Citas Agendadas</h2>
 
       <div className="text-end mb-3">
-        <button
-          className="btn btn-outline-dark"
-          onClick={() => setNewAppointmentFlag(true)}
-        >
+        <button className="btn btn-outline-dark" onClick={() => setNewAppointmentFlag(true)}>
           Agendar cita
         </button>
       </div>
-
+      {console.log(appointments)}
       {appointments.length === 0 ? (
-        <div className="text-center">
-          <p>No hay citas agendadas</p>
-        </div>
+        <div className="text-center"><p>No hay citas agendadas</p></div>
       ) : (
         <div className="row">
           {appointments.map((appointment) => (
@@ -97,23 +94,12 @@ export const AppointmentList = () => {
                     Mascota: {appointment.petName}
                   </h6>
                   <p className="card-text">
-                    <strong>Fecha:</strong> {formatDate(appointment.date)}
-                    <br />
-                    <strong>Hora:</strong> {appointment.time}
-                    <br />
-                    <strong>Dueño:</strong> {appointment.ownerName}
+                    <strong>Fecha:</strong> {formatDate(appointment.date)}<br/>
+                    <strong>Hora:</strong> {appointment.time}<br/>
                   </p>
                   <div className="d-flex justify-content-end">
-                    <span
-                      className={`badge bg-${
-                        new Date(appointment.date) > new Date()
-                          ? "primary"
-                          : "secondary"
-                      }`}
-                    >
-                      {new Date(appointment.date) > new Date()
-                        ? "Próxima"
-                        : "Pasada"}
+                    <span className={`badge bg-${new Date(appointment.date) > new Date() ? "primary" : "secondary"}`}>
+                      {new Date(appointment.date) > new Date() ? "Próxima" : "Pasada"}
                     </span>
                   </div>
                 </div>

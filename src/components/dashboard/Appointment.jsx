@@ -21,7 +21,8 @@ export function Appointment({ back }) {
     try {
       const data = await getAllPetsByUserId();
       setPets(data);
-      if (data.length > 0) setFormData({ ...formData, petId: data[0].id });
+      console.log(data)
+      if (data.length > 0) setFormData({ ...formData, petId: data[0].idPet });
     } catch (error) {
       console.error("Error cargando mascotas:", error);
       Swal.fire({
@@ -41,6 +42,7 @@ export function Appointment({ back }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(formData)
     if (!formData.petId || !formData.service || !formData.date || !formData.time) {
       Swal.fire("Error", "Todos los campos son obligatorios", "error");
       return;
@@ -89,7 +91,7 @@ export function Appointment({ back }) {
             onChange={handleChange}
           >
             {pets.map((pet) => (
-              <option key={pet.id} value={pet.id}>
+              <option key={pet.idPet} value={pet.idPet}>
                 {pet.name}
               </option>
             ))}

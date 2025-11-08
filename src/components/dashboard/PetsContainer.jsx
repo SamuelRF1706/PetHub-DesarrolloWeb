@@ -38,7 +38,7 @@ export const PetsContainer = () => {
 
           <div className="row mt-3">
             {pets.length > 0 ? (
-              pets.map((pet) => <CardPet pet={pet} key={pet.id} />)
+              pets.map((pet) => <CardPet pet={pet} key={pet.idPet} />)
             ) : (
               <h1 className="text-center">No tienes mascotas registradas</h1>
             )}
