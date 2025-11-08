@@ -29,15 +29,11 @@ export const PetsContainer = () => {
         <RegisterPet back={back} />
       ) : (
         <div>
-          <button
-            className="btn btn-outline-dark me-2"
+          <button className="btn btn-outline-dark me-2"
             onClick={() => setNewPetFlag(true)}
           >
             Agregar mascota
           </button>
-
-       
-
 
           <div className="row mt-3">
             {pets.length > 0 ? (
