@@ -86,6 +86,47 @@ const getAllAppointmentsByUserId = async () => {
     return appointmentsData;
 };
 
+export const getAppointmentsForVet = async () => {
+    const user_id = localStorage.getItem("user_id");
+    try {
+        // Login as admin to get token
+        const loginRes = await axios.post("https://pethub-backend-rrpn.onrender.com/users/login", {
+            username: "admin",
+            password: "admin123"
+        });
+        const token = loginRes?.data?.token;
+        if (!token) return [];
+
+        const res = await axios.get("https://pethub-backend-rrpn.onrender.com/appointments/getAllAppointments", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const all = Array.isArray(res.data) ? res.data : res.data?.appointments || [];
+        const mine = all.filter(a => {
+            const vetId = a.veterinarian?.idUser || a.veterinarianId || a.veterinarian?.id;
+            const petId = a.pet?.id || a.petId || a.pet?._id;
+            return String(vetId) === String(user_id);
+        });
+
+        // normalize fields
+        return mine.map(a => ({
+            id: a.id || a._id || a.appointmentId,
+            service: a.service || a.tipo || a.tipoServicio || a.serviceName,
+            petName: a.pet?.name || a.petName || a.petName || (a.pet && (a.pet.nombre || a.pet.name)),
+            ownerName: a.owner?.fullName || a.owner?.name || a.ownerName || (a.owner && `${a.owner.name || ''} ${a.owner.lastName || ''}`.trim()),
+            date: a.appointmentDate || a.date || a.fecha || a.scheduledDate,
+            time: a.time || a.appointmentTime || (a.appointmentDate ? new Date(a.appointmentDate).toLocaleTimeString() : ''),
+            raw: a
+        }));
+    } catch (error) {
+        console.error('[getAppointmentsForVet] error:', error?.response?.data || error.message || error);
+        return [];
+    }
+};
+
 const getAppointmentsByDate = async (date) => {
     const user_id = localStorage.getItem("user_id");
     const appointmentsRef = collection(db, "users", user_id, "appointments");

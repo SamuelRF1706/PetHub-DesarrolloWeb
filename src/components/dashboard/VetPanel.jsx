@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAllAppointmentsByUserId } from "../../services/appointment.service";
+import { getAppointmentsForVet } from "../../services/appointment.service"
 import Swal from "sweetalert2";
 
 export const VetPanel = () => {
@@ -9,7 +9,7 @@ export const VetPanel = () => {
   useEffect(() => {
     (async () => {
       try {
-        const data = await getAllAppointmentsByUserId();
+        const data = await getAppointmentsForVet();
         setAppointments(data || []);
       } catch (error) {
         console.error("Error cargando citas para panel vet:", error);
