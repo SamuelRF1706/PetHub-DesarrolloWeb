@@ -38,7 +38,6 @@ export const PetsContainer = () => {
 
        
 
-         {console.log(pets)}
 
           <div className="row mt-3">
             {pets.length > 0 ? (
